@@ -127,6 +127,9 @@ private:
     int nCurrentY;
     int nPieceCount;
     int nScore;
+    int nFrameCount = 0;
+    int nDropInterval = 120;
+    vector<int> vLines;
 
     void createGameBoard() {
         gameBoard = vector<int>(nFieldWidth*nFieldHeight);
@@ -177,8 +180,6 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
     return true; // No fail condition has been met
 }
 
-    int nFrameCount = 0;
-    int nDropInterval = 120;
     void update() {
         nFrameCount++;
         bForceDown = (nFrameCount == nDropInterval);
@@ -200,11 +201,42 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                                 gameBoard[fi] = nCurrentPiece;
                             }
                     }
+
+                // Check for full lines starting from top to bottom
+                for(int py = 1; py < nFieldHeight - 1; ++py) { // start from 1 and stop before the last row to preserve the borders
+                    bool lineIsFull = true;
+                    for(int px = 1; px < nFieldWidth - 1; ++px) { // start from 1 and stop before the last column to preserve the borders
+                        if (gameBoard[py * nFieldWidth + px] == 10) {
+                            lineIsFull = false;
+                            break;
+                        }
+                    }
+
+                    if (lineIsFull) {
+                        // If line is full, move all lines above it one step down
+                        for (int j = py; j > 1; --j) {
+                            for (int px = 1; px < nFieldWidth - 1; ++px) {
+                                gameBoard[j * nFieldWidth + px] = gameBoard[(j - 1) * nFieldWidth + px];
+                            }
+                        }
+                        // The topmost line within the borders has no line above it, fill it with 10s.
+                        for (int px = 1; px < nFieldWidth - 1; ++px) {
+                            gameBoard[1 * nFieldWidth + px] = 10;
+                        }
+                    }
+                }
+
+
+               
+
                 //Reset values of new tetromino
                 nCurrentPiece = rand() % 7;
                 nCurrentRotation = 0;
                 nCurrentX = 5;
                 nCurrentY = -2;
+
+                // If piece does not fit straight away, game over!
+				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
             }
             nFrameCount = 0;
         }
