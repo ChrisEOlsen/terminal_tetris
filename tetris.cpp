@@ -6,6 +6,8 @@
 
 using namespace std;
 
+//Compile command: emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -O3 -o tetris.js tetris.cpp
+
 //Rotation:
 //0 deg: i = y * w + x
 //90 deg: i = 12 + y - (x * 4)
@@ -128,7 +130,7 @@ private:
     int nPieceCount;
     int nScore;
     int nFrameCount = 0;
-    int nDropInterval = 120;
+    int nDropInterval;
     vector<int> vLines;
 
     void createGameBoard() {
@@ -142,12 +144,13 @@ private:
 
 public:
     Game(bool bGameOver, bool bForceDown, int nCurrentPiece, int nCurrentRotation, 
-         int nCurrentX, int nCurrentY, int nPieceCount, int nScore) 
+         int nCurrentX, int nCurrentY, int nPieceCount, int nScore, int nDropInterval) 
         : bGameOver(bGameOver), bForceDown(bForceDown), nCurrentPiece(nCurrentPiece),
           nCurrentRotation(nCurrentRotation), nCurrentX(nCurrentX), nCurrentY(nCurrentY), nPieceCount(nPieceCount),
-          nScore(nScore) 
+          nScore(nScore), nDropInterval(nDropInterval)
     {
         createGameBoard();
+        srand(time(NULL));
     }
 
 bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
@@ -184,6 +187,12 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
         nFrameCount++;
         bForceDown = (nFrameCount == nDropInterval);
         if(bForceDown){
+            nFrameCount = 0;
+            nPieceCount++;
+
+            if(nPieceCount % 4 == 0)
+                if(nDropInterval >= 20) nDropInterval--;
+
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
                 nCurrentY += 1;
             }else{
@@ -202,10 +211,11 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                             }
                     }
 
-                // Check for full lines starting from top to bottom
-                for(int py = 1; py < nFieldHeight - 1; ++py) { // start from 1 and stop before the last row to preserve the borders
+              // Check for full lines starting from top to bottom
+                int clearedLines = 0; // Add this line to keep track of cleared lines
+                for(int py = 1; py < nFieldHeight - 1; ++py) { 
                     bool lineIsFull = true;
-                    for(int px = 1; px < nFieldWidth - 1; ++px) { // start from 1 and stop before the last column to preserve the borders
+                    for(int px = 1; px < nFieldWidth - 1; ++px) { 
                         if (gameBoard[py * nFieldWidth + px] == 10) {
                             lineIsFull = false;
                             break;
@@ -214,38 +224,45 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
                     if (lineIsFull) {
                         // If line is full, move all lines above it one step down
-                        for (int j = py; j > 1; --j) {
-                            for (int px = 1; px < nFieldWidth - 1; ++px) {
+                        for (int j = py; j > 1; --j) { 
+                            for (int px = 1; px < nFieldWidth - 1; ++px) { 
                                 gameBoard[j * nFieldWidth + px] = gameBoard[(j - 1) * nFieldWidth + px];
                             }
                         }
                         // The topmost line within the borders has no line above it, fill it with 10s.
-                        for (int px = 1; px < nFieldWidth - 1; ++px) {
-                            gameBoard[1 * nFieldWidth + px] = 10;
+                        for (int px = 1; px < nFieldWidth - 1; ++px) { 
+                            gameBoard[1 * nFieldWidth + px] = 10; 
                         }
+
+                        // Line was cleared, increment counter
+                        clearedLines++;
                     }
                 }
 
-
-               
+                // Calculate score
+                nScore += 25 * clearedLines; // base score for line clearance
+                if (clearedLines > 0) {
+                    nScore += (1 << clearedLines) * 100; // bonus for clearing multiple lines
+                }
 
                 //Reset values of new tetromino
                 nCurrentPiece = rand() % 7;
                 nCurrentRotation = 0;
                 nCurrentX = 5;
-                nCurrentY = -2;
+                nCurrentY = -3;
 
                 // If piece does not fit straight away, game over!
-				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY);
+				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
             }
-            nFrameCount = 0;
         }
     }
 
     vector<int> getGameBoard() {
         return gameBoard;
     }
-
+    bool getGameOver(){
+        return bGameOver;
+    }
     int getCurrentPiece() {
         return nCurrentPiece;
     }
@@ -260,6 +277,10 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
     int getCurrentY() {
         return nCurrentY;
+    }
+
+    int getScore(){
+        return nScore;
     }
 
         // Setter functions
@@ -293,19 +314,35 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
                 nCurrentY++;
             }
+        }else if(val == 3){
+            while(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
+                nCurrentY++;
+            }
         }
         
     }
 
     void rotateTetromino(int val){
     int nextRotation = (nCurrentRotation + val) % 4;
-    if(nextRotation < 0){
-        nextRotation = 3;
+        if(nextRotation < 0){
+            nextRotation = 3;
+        }
+        if(checkCollision(nCurrentPiece, nextRotation, nCurrentX, nCurrentY)){
+            nCurrentRotation = nextRotation;
+        }
     }
-    if(checkCollision(nCurrentPiece, nextRotation, nCurrentX, nCurrentY)){
-        nCurrentRotation = nextRotation;
+
+    void restartGame(){
+        //Reset values for new game
+        bGameOver = false;
+        createGameBoard();
+        nCurrentPiece = rand() % 7;
+        nCurrentRotation = 0;
+        nCurrentX = 5;
+        nCurrentY = -3;
+        nScore = 0; 
+        nDropInterval = 120;
     }
-}
 };
 
 
@@ -318,19 +355,22 @@ EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("getTetromino", &getTetromino);
     emscripten::function("getFlattenedTetromino", &getFlattenedTetromino);
     emscripten::class_<Game>("Game")
-        .constructor<bool, bool, int, int, int, int, int, int>()
+        .constructor<bool, bool, int, int, int, int, int, int,int>()
         .function("update", &Game::update)
         .function("getGameBoard", &Game::getGameBoard)
+        .function("getGameOver", &Game::getGameOver)
         .function("getCurrentPiece", &Game::getCurrentPiece)
         .function("getCurrentRotation", &Game::getCurrentRotation)
         .function("getCurrentX", &Game::getCurrentX)
         .function("getCurrentY", &Game::getCurrentY)
+        .function("getScore", &Game::getScore)
         .function("setCurrentPiece", &Game::setCurrentPiece)
         .function("setCurrentRotation", &Game::setCurrentRotation)
         .function("setCurrentX", &Game::setCurrentX)
         .function("setCurrentY", &Game::setCurrentY)
         .function("moveTetromino", &Game::moveTetromino)
-        .function("rotateTetromino", &Game::rotateTetromino);
+        .function("rotateTetromino", &Game::rotateTetromino)
+        .function("restartGame", &Game::restartGame);
 }
 
 
