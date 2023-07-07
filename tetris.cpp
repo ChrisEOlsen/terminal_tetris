@@ -6,7 +6,8 @@
 
 using namespace std;
 
-//Compile command: emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -O3 -o tetris.js tetris.cpp
+//Compile command: 
+//emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -O3 -o tetris.js tetris.cpp
 
 //Rotation:
 //0 deg: i = y * w + x
@@ -122,6 +123,7 @@ class Game {
 private:
     vector<int> gameBoard;
     bool bGameOver;
+    bool bGamePaused;
     bool bForceDown;
     int nCurrentPiece;
     int nCurrentRotation;
@@ -143,9 +145,9 @@ private:
    
 
 public:
-    Game(bool bGameOver, bool bForceDown, int nCurrentPiece, int nCurrentRotation, 
+    Game(bool bGameOver, bool bForceDown, bool bGamePaused, int nCurrentPiece, int nCurrentRotation, 
          int nCurrentX, int nCurrentY, int nPieceCount, int nScore, int nDropInterval) 
-        : bGameOver(bGameOver), bForceDown(bForceDown), nCurrentPiece(nCurrentPiece),
+        : bGameOver(bGameOver), bForceDown(bForceDown), bGamePaused(bGamePaused),nCurrentPiece(nCurrentPiece),
           nCurrentRotation(nCurrentRotation), nCurrentX(nCurrentX), nCurrentY(nCurrentY), nPieceCount(nPieceCount),
           nScore(nScore), nDropInterval(nDropInterval)
     {
@@ -184,18 +186,18 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 }
 
     void update() {
-        nFrameCount++;
-        bForceDown = (nFrameCount == nDropInterval);
-        if(bForceDown){
-            nFrameCount = 0;
-            nPieceCount++;
+        if(!bGamePaused)
+            nFrameCount++;
 
-            if(nPieceCount % 4 == 0)
-                if(nDropInterval >= 20) nDropInterval--;
+        bForceDown = (nFrameCount == nDropInterval);
+        
+        if(bForceDown){
+            nFrameCount = 0;                
 
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
                 nCurrentY += 1;
             }else{
+        
                 //the tetromino has reached its end point -> Stick it to gameBoard
                 for(int px = 0; px < 4; px++)
                     for(int py = 0; py < 4; py++){
@@ -250,6 +252,10 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                 nCurrentRotation = 0;
                 nCurrentX = 5;
                 nCurrentY = -3;
+
+                nPieceCount++;
+                if(nPieceCount % 3 == 0)
+                    if(nDropInterval >= 20) nDropInterval -= 5;
 
                 // If piece does not fit straight away, game over!
 				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
@@ -341,7 +347,14 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
         nCurrentX = 5;
         nCurrentY = -3;
         nScore = 0; 
-        nDropInterval = 120;
+        nDropInterval = 80;
+    }
+    
+    void pauseGame(){
+        bGamePaused = true;
+    }
+    void resumeGame(){
+        bGamePaused = false;
     }
 };
 
@@ -355,7 +368,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("getTetromino", &getTetromino);
     emscripten::function("getFlattenedTetromino", &getFlattenedTetromino);
     emscripten::class_<Game>("Game")
-        .constructor<bool, bool, int, int, int, int, int, int,int>()
+        .constructor<bool, bool,bool, int, int, int, int, int, int,int>()
         .function("update", &Game::update)
         .function("getGameBoard", &Game::getGameBoard)
         .function("getGameOver", &Game::getGameOver)
@@ -370,7 +383,9 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .function("setCurrentY", &Game::setCurrentY)
         .function("moveTetromino", &Game::moveTetromino)
         .function("rotateTetromino", &Game::rotateTetromino)
-        .function("restartGame", &Game::restartGame);
+        .function("restartGame", &Game::restartGame)
+        .function("pauseGame", &Game::pauseGame)
+        .function("resumeGame", &Game::resumeGame);
 }
 
 

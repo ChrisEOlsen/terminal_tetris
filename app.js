@@ -5,7 +5,7 @@ Module.onRuntimeInitialized = async function () {
 
   var c = canvas.getContext("2d")
 
-  const blockSize = 30 //px
+  const blockSize = innerHeight / 22 //px
   const nFieldWidth = 12
   const nFieldHeight = 18
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#6d28d9", "#d946ef", "#f8fafc"]
@@ -13,7 +13,7 @@ Module.onRuntimeInitialized = async function () {
   canvas.width = blockSize * nFieldWidth
   canvas.height = blockSize * nFieldHeight
 
-  let game = new Module.Game(false, false, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 120)
+  let game = new Module.Game(false, false, false, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 80)
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -32,6 +32,7 @@ Module.onRuntimeInitialized = async function () {
         } else {
           c.fillStyle = tetrominoColors[value]
         }
+
         c.fillRect(x * blockSize, y * blockSize, blockSize, blockSize)
 
         // Draw border
@@ -60,7 +61,7 @@ Module.onRuntimeInitialized = async function () {
           c.fillStyle = tetrominoColors[nCurrentPiece]
           c.fillRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
           // Draw border
-          c.strokeStyle = "black"
+          c.strokeStyle = "white"
           c.lineWidth = 1
           c.strokeRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
         }
@@ -93,6 +94,12 @@ Module.onRuntimeInitialized = async function () {
 
         case "Space":
           game.moveTetromino(3)
+          break
+        case "Escape":
+          game.pauseGame()
+          break
+        case "KeyP":
+          game.resumeGame()
           break
       }
     })

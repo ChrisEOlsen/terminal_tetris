@@ -20,6 +20,9 @@ body {
   height: 100dvh;
   background-color: black;
   position: relative;
+  background-image: url("./assets/tetris_background.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 #game-canvas {
 }
