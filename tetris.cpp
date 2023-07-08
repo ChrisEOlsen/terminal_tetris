@@ -71,6 +71,11 @@ vector<vector<int>> tetrominos = {
     rzTetromino
 };
 
+vector<int> getTetromino(int nCurrentPiece) {
+    return tetrominos[nCurrentPiece];
+}
+
+
 //Rotation function
 int Rotate(int px, int py, int r)
 {
@@ -100,9 +105,6 @@ int Rotate(int px, int py, int r)
 	return pi;
 }
 
-vector<int> getTetromino(int nCurrentPiece) {
-    return tetrominos[nCurrentPiece];
-}
 
 
 
@@ -193,10 +195,11 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                     for(int py = 0; py < 4; py++){
                         int pi = Rotate(px, py, nCurrentRotation); // Index of cell in tetromino
                         int fi = (nCurrentY + py) * nFieldWidth + (nCurrentX + px); // Respective index in field
-                        // Get tetromino piece
-                        vector<int> tetromino = tetrominos[nCurrentPiece];
-
-                        if(tetromino[pi] == 1){
+                        // Check if the fi is within gameBoard's boundaries
+                        if (fi < 0 || fi >= gameBoard.size()) {
+                            continue;
+                        }
+                        if(tetrominos[nCurrentPiece][pi] == 1){
                             gameBoard[fi] = nCurrentPiece;
                         }
                     }
