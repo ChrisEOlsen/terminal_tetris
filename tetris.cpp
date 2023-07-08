@@ -151,8 +151,8 @@ public:
           nCurrentRotation(nCurrentRotation), nCurrentX(nCurrentX), nCurrentY(nCurrentY), nPieceCount(nPieceCount),
           nScore(nScore), nDropInterval(nDropInterval)
     {
-        createGameBoard();
         srand(time(NULL));
+        createGameBoard();
     }
 
 bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
@@ -253,9 +253,10 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                 nCurrentX = 5;
                 nCurrentY = -3;
 
+                //Calibrate speed throughout game
                 nPieceCount++;
                 if(nPieceCount % 3 == 0)
-                    if(nDropInterval >= 20) nDropInterval -= 5;
+                    if(nDropInterval >= 20) nDropInterval -= 2;
 
                 // If piece does not fit straight away, game over!
 				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
@@ -341,13 +342,13 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
     void restartGame(){
         //Reset values for new game
         bGameOver = false;
-        createGameBoard();
         nCurrentPiece = rand() % 7;
         nCurrentRotation = 0;
         nCurrentX = 5;
         nCurrentY = -3;
         nScore = 0; 
-        nDropInterval = 80;
+        nDropInterval = 100;
+        createGameBoard();
     }
     
     void pauseGame(){

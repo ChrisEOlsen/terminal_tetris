@@ -13,22 +13,35 @@ body {
 
 #projectContainer {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100vw;
   height: 100dvh;
   background-color: black;
-  position: relative;
-  background-image: url("./assets/tetris_background.jpeg");
+  background-image: linear-gradient(#1e40af, #083344);
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+#subContainer {
+  width: fit-content;
+  height: fit-content;
+  position: relative;
 }
 #game-canvas {
 }
 
+#scoreBoard {
+  width: fit-content;
+  height: fit-content;
+  padding: 30px;
+  font-size: 24px;
+  color: white;
+}
+
 #gameOverContainer,
-#startGameContainer {
+#startGameContainer,
+#pauseGameContainer {
   position: absolute;
   top: 40%;
   left: 50%;
@@ -46,7 +59,8 @@ body {
 }
 
 #playButton,
-#playAgainButton {
+#playAgainButton,
+#resumeButton {
   color: white;
   background-color: black;
   border: 2px dashed white;
@@ -56,15 +70,8 @@ body {
   font-family: "Press Start 2P", cursive;
 }
 #playButton:hover,
-#playAgainButton:hover {
+#playAgainButton:hover,
+#resumeButton:hover {
   cursor: pointer;
   background-color: orange;
-}
-
-#scoreBoard {
-  width: fit-content;
-  height: fit-content;
-  padding: 30px;
-  font-size: 36px;
-  color: white;
 }

@@ -1,11 +1,11 @@
 Module.onRuntimeInitialized = async function () {
   const projectContainer = document.getElementById("projectContainer")
+  const subContainer = document.getElementById("subContainer")
   const scoreBoard = document.getElementById("scoreBoard")
   const canvas = document.getElementById("game-canvas")
-
   var c = canvas.getContext("2d")
 
-  const blockSize = innerHeight / 22 //px
+  const blockSize = 32 //px
   const nFieldWidth = 12
   const nFieldHeight = 18
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#6d28d9", "#d946ef", "#f8fafc"]
@@ -13,7 +13,7 @@ Module.onRuntimeInitialized = async function () {
   canvas.width = blockSize * nFieldWidth
   canvas.height = blockSize * nFieldHeight
 
-  let game = new Module.Game(false, false, false, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 80)
+  let game = new Module.Game(false, false, false, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 100)
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -96,10 +96,10 @@ Module.onRuntimeInitialized = async function () {
           game.moveTetromino(3)
           break
         case "Escape":
-          game.pauseGame()
-          break
-        case "KeyP":
-          game.resumeGame()
+          if (!document.getElementById("pauseGameContainer") && !document.getElementById("startGameContainer")) {
+            game.pauseGame()
+            displayPausePage()
+          }
           break
       }
     })
@@ -114,6 +114,14 @@ Module.onRuntimeInitialized = async function () {
         gameLoop()
         document.getElementById("gameOverContainer").remove()
       }
+      if (e.target.id == "pauseButton") {
+        // Not yet created
+        game.pauseGame()
+      }
+      if (e.target.id == "resumeButton") {
+        game.resumeGame()
+        document.getElementById("pauseGameContainer").remove()
+      }
     })
   }
 
@@ -123,6 +131,7 @@ Module.onRuntimeInitialized = async function () {
     if (!game.getGameOver()) {
       requestAnimationFrame(gameLoop) // repeat next frame
     } else {
+      saveHighScore()
       displayGameOverPage()
     }
   }
@@ -130,20 +139,42 @@ Module.onRuntimeInitialized = async function () {
   draw() //Draw Board just as a background before game starts
   displayStartPage()
 
+  //COMPONENTS BELOW:
+
+  function createPauseButton() {
+    const pauseButton = document.createElement("button")
+    pauseButton.id = "cornerPause"
+    const pauseIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 19V5h4v14h-4Zm-8 0V5h4v14H6Z"/></svg>`
+    pauseButton.innerHTML = pauseIcon
+  }
+  function createPlayButton() {
+    const playButton = document.createElement("button")
+    playButton.id = "cornerPlay"
+    const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 19V5h4v14h-4Zm-8 0V5h4v14H6Z"/></svg>`
+    playButton.innerHTML = playIcon
+  }
+
   function displayGameOverPage() {
     const gameOverContainer = document.createElement("div")
     const spanTitle = document.createElement("span")
     const spanScore = document.createElement("span")
+    const spanHighScore = document.createElement("span")
     const playAgainButton = document.createElement("button")
     gameOverContainer.id = "gameOverContainer"
     playAgainButton.id = "playAgainButton"
     spanTitle.textContent = "Game Over!"
     spanScore.textContent = `Score: ${game.getScore().toString()}`
+    if (localStorage.getItem("highScore") !== null) {
+      spanHighScore.textContent = `High score: ${localStorage.getItem("highScore")}`
+    } else {
+      spanHighScore.textContent = `High score: ${game.getScore().toString()}`
+    }
     playAgainButton.textContent = "PLAY AGAIN"
     gameOverContainer.appendChild(spanTitle)
     gameOverContainer.appendChild(spanScore)
+    gameOverContainer.appendChild(spanHighScore)
     gameOverContainer.appendChild(playAgainButton)
-    projectContainer.appendChild(gameOverContainer)
+    subContainer.appendChild(gameOverContainer)
   }
 
   function displayStartPage() {
@@ -156,9 +187,39 @@ Module.onRuntimeInitialized = async function () {
     playButton.textContent = "PLAY"
     startGameContainer.appendChild(spanTitle)
     startGameContainer.appendChild(playButton)
-    projectContainer.appendChild(startGameContainer)
+    subContainer.appendChild(startGameContainer)
   }
 
+  function displayPausePage() {
+    const pauseGameContainer = document.createElement("div")
+    const spanTitle = document.createElement("span")
+    const resumeButton = document.createElement("resumeButton")
+    pauseGameContainer.id = "pauseGameContainer"
+    resumeButton.id = "resumeButton"
+    spanTitle.textContent = "PAUSED"
+    resumeButton.textContent = "resume"
+    pauseGameContainer.appendChild(spanTitle)
+    pauseGameContainer.appendChild(resumeButton)
+    subContainer.appendChild(pauseGameContainer)
+  }
+
+  //LOCAL STORAGE STUFF:
+  function saveHighScore() {
+    let highScore = parseInt(localStorage.getItem("highScore"))
+    if (isNaN(highScore)) {
+      // High score doesn't exist yet, initialize it
+      highScore = game.getScore()
+      localStorage.setItem("highScore", highScore)
+    } else {
+      // High score exists
+      if (game.getScore() > highScore) {
+        highScore = game.getScore()
+        localStorage.setItem("highScore", highScore)
+      }
+    }
+  }
+
+  //Utility function
   function randomIntFromRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
