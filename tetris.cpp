@@ -281,22 +281,6 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
         return nScore;
     }
 
-        // Setter functions
-    void setCurrentPiece(int nPiece) {
-        nCurrentPiece = nPiece;
-    }
-
-    void setCurrentRotation(int nRotation) {
-        nCurrentRotation = nRotation;
-    }
-
-    void setCurrentX(int nX) {
-        nCurrentX = nX;
-    }
-
-    void setCurrentY(int nY) {
-        nCurrentY = nY;
-    }
 
     //Input functions
     void moveTetromino(int val){
@@ -371,10 +355,6 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .function("getCurrentX", &Game::getCurrentX)
         .function("getCurrentY", &Game::getCurrentY)
         .function("getScore", &Game::getScore)
-        .function("setCurrentPiece", &Game::setCurrentPiece)
-        .function("setCurrentRotation", &Game::setCurrentRotation)
-        .function("setCurrentX", &Game::setCurrentX)
-        .function("setCurrentY", &Game::setCurrentY)
         .function("moveTetromino", &Game::moveTetromino)
         .function("rotateTetromino", &Game::rotateTetromino)
         .function("restartGame", &Game::restartGame)
