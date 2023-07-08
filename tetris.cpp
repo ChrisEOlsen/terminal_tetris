@@ -15,58 +15,61 @@ using namespace std;
 //180 deg: i = 15 - (y * 4) - x
 //270 deg: i = 3 + y(x * 4)
 
-//Tetrominos
-vector<vector<int>> createTetromino(vector<vector<int>> cells) {
-    vector<vector<int>> tetromino(4, vector<int>(4, 0));
-    for (int i = 0; i < cells.size(); i++)
-        for (int j = 0; j < cells[i].size(); j++)
-            tetromino[i][j] = cells[i][j];
-    return tetromino;
-}
+//Define tetrominos:
+// Define your Tetrominos in a flattened form (example shown for I, T, O, and L)
+vector<int> iTetromino = {
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0
+};
+vector<int> tTetromino = {
+    0, 0, 0, 0,
+    0, 1, 0, 0,
+    1, 1, 1, 0,
+    0, 0, 0, 0
+};
+vector<int> oTetromino = {
+    0, 0, 0, 0,
+    0, 1, 1, 0,
+    0, 1, 1, 0,
+    0, 0, 0, 0
+};
+vector<int> lTetromino = {
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 1, 1, 0,
+    0, 0, 0, 0
+};
+vector<int> rlTetromino = {
+    0, 1, 0, 0,
+    0, 1, 0, 0,
+    0, 1, 1, 0,
+    0, 0, 0, 0
+};
+vector<int> zTetromino = {
+    0, 1, 0, 0,
+    0, 1, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 0
+};
+vector<int> rzTetromino = {
+    0, 0, 1, 0,
+    0, 1, 1, 0,
+    0, 1, 0, 0,
+    0, 0, 0, 0
+};
 
-// Define your Tetrominos (example shown for I, T, O, and L)
-vector<vector<int>> iTetromino = createTetromino({
-    {0, 0, 1, 0},
-    {0, 0, 1, 0},
-    {0, 0, 1, 0},
-    {0, 0, 1, 0}
-});
-vector<vector<int>> tTetromino = createTetromino({
-    {0, 0, 0, 0},
-    {0, 1, 0, 0},
-    {1, 1, 1, 0},
-    {0, 0, 0, 0}
-});
-vector<vector<int>> oTetromino = createTetromino({
-    {0, 0, 0, 0},
-    {0, 1, 1, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0}
-});
-vector<vector<int>> lTetromino = createTetromino({
-    {0, 0, 1, 0},
-    {0, 0, 1, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0}
-});
-vector<vector<int>> rlTetromino = createTetromino({
-    {0, 1, 0, 0},
-    {0, 1, 0, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0}
-});
-vector<vector<int>> zTetromino = createTetromino({
-    {0, 1, 0, 0},
-    {0, 1, 1, 0},
-    {0, 0, 1, 0},
-    {0, 0, 0, 0}
-});
-vector<vector<int>> rzTetromino = createTetromino({
-    {0, 0, 1, 0},
-    {0, 1, 1, 0},
-    {0, 1, 0, 0},
-    {0, 0, 0, 0}
-});
+// Create a vector of Tetrominos
+vector<vector<int>> tetrominos = {
+    iTetromino,
+    tTetromino,
+    oTetromino,
+    lTetromino,
+    rlTetromino,
+    zTetromino,
+    rzTetromino
+};
 
 //Rotation function
 int Rotate(int px, int py, int r)
@@ -97,23 +100,10 @@ int Rotate(int px, int py, int r)
 	return pi;
 }
 
-// Prepare your Tetrominos for use
-vector<vector<vector<int>>> tetrominos = {iTetromino, tTetromino, oTetromino, lTetromino, rlTetromino, zTetromino, rzTetromino};
-vector<vector<int>> getTetromino(int index) {
-        return tetrominos[index];
-    }
-
-//Flatten tetromino to be accessed in js
-vector<int> getFlattenedTetromino(int index) {
-  vector<int> flattenedTetromino;
-  auto tetromino = tetrominos[index];
-  for (const auto &row : tetromino) {
-    for (int value : row) {
-      flattenedTetromino.push_back(value);
-    }
-  }
-  return flattenedTetromino;
+vector<int> getTetromino(int nCurrentPiece) {
+    return tetrominos[nCurrentPiece];
 }
+
 
 
 int nFieldWidth = 12;
@@ -173,17 +163,17 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                 if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
                 {
                     // Get tetromino piece
-                    vector<vector<int>> tetromino = getTetromino(nTetromino);
-                    int px_in_p = pi % 4;
-                    int py_in_p = pi / 4;
+                    vector<int> tetromino = tetrominos[nTetromino]; 
+
                     // In Bounds so do collision check
-                    if (tetromino[py_in_p][px_in_p] != 0 && gameBoard[fi] != 10)
+                    if (tetromino[pi] != 0 && gameBoard[fi] != 10) 
                         return false; // fail on first hit
                 }
             }
         }
     return true; // No fail condition has been met
 }
+
 
     void update() {
         if(!bGamePaused)
@@ -201,16 +191,14 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                 //the tetromino has reached its end point -> Stick it to gameBoard
                 for(int px = 0; px < 4; px++)
                     for(int py = 0; py < 4; py++){
-                            int pi = Rotate(px,py,nCurrentRotation); //Index of cell in tetromino
-                            int fi = (nCurrentY + py) * nFieldWidth + (nCurrentX + px); //Respective index in field
-                            // Get tetromino piece
-                            vector<vector<int>> tetromino = getTetromino(nCurrentPiece);
-                            int px_in_p = pi % 4;
-                            int py_in_p = pi / 4;
+                        int pi = Rotate(px, py, nCurrentRotation); // Index of cell in tetromino
+                        int fi = (nCurrentY + py) * nFieldWidth + (nCurrentX + px); // Respective index in field
+                        // Get tetromino piece
+                        vector<int> tetromino = tetrominos[nCurrentPiece];
 
-                            if(tetromino[py_in_p][px_in_p] == 1){
-                                gameBoard[fi] = nCurrentPiece;
-                            }
+                        if(tetromino[pi] == 1){
+                            gameBoard[fi] = nCurrentPiece;
+                        }
                     }
 
               // Check for full lines starting from top to bottom
@@ -309,6 +297,7 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
     //Input functions
     void moveTetromino(int val){
+        if(bGamePaused || bGameOver) return;
         if(val == 0){
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
                 nCurrentX--;
@@ -330,6 +319,8 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
     }
 
     void rotateTetromino(int val){
+    if(bGamePaused || bGameOver) return;
+
     int nextRotation = (nCurrentRotation + val) % 4;
         if(nextRotation < 0){
             nextRotation = 3;
@@ -367,7 +358,6 @@ EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::register_vector<vector<int>>("VectorVectorInt");
     emscripten::function("Rotate", &Rotate);
     emscripten::function("getTetromino", &getTetromino);
-    emscripten::function("getFlattenedTetromino", &getFlattenedTetromino);
     emscripten::class_<Game>("Game")
         .constructor<bool, bool,bool, int, int, int, int, int, int,int>()
         .function("update", &Game::update)

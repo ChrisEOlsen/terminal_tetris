@@ -45,19 +45,13 @@ Module.onRuntimeInitialized = async function () {
     let nCurrentY = game.getCurrentY()
     let nCurrentPiece = game.getCurrentPiece()
     let nCurrentRotation = game.getCurrentRotation()
-    let flatTetromino = Module.getFlattenedTetromino(nCurrentPiece) // Get current Tetromino in js friendly form
-    let tetromino = []
-    for (let i = 0; i < 4; i++) {
-      tetromino[i] = []
-      for (let j = 0; j < 4; j++) {
-        tetromino[i][j] = flatTetromino.get(j * 4 + nCurrentX)
-      }
-    }
+    let tetromino = Module.getTetromino(nCurrentPiece)
+
     //Draw Tetromino
     for (let px = 0; px < 4; px++)
       for (let py = 0; py < 4; py++) {
         let rotatedIndex = Module.Rotate(px, py, nCurrentRotation)
-        if (flatTetromino.get(rotatedIndex) !== 0) {
+        if (tetromino.get(rotatedIndex) === 1) {
           c.fillStyle = tetrominoColors[nCurrentPiece]
           c.fillRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
           // Draw border
@@ -66,8 +60,9 @@ Module.onRuntimeInitialized = async function () {
           c.strokeRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
         }
       }
+
     //Draw Score Board
-    scoreBoard.textContent = game.getScore().toString()
+    scoreBoard.textContent = `Score:${game.getScore().toString()}`
   }
 
   //Handle User Input

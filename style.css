@@ -34,9 +34,13 @@ body {
 #scoreBoard {
   width: fit-content;
   height: fit-content;
-  padding: 30px;
-  font-size: 24px;
+  font-size: 16px;
+  padding: 10px;
   color: white;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-100%, 0);
 }
 
 #gameOverContainer,
@@ -54,8 +58,16 @@ body {
   color: white;
   background-color: black;
   border: 4px dashed white;
-  font-size: 24px;
+  font-size: 18px;
   padding: 20px;
+  width: 90%;
+}
+#gameOverContainer {
+  align-items: start;
+}
+#gameOverContainer span:nth-child(1) {
+  align-self: center;
+  color: white;
 }
 
 #playButton,
@@ -68,6 +80,9 @@ body {
   font-size: 16px;
   border-radius: 3px;
   font-family: "Press Start 2P", cursive;
+}
+#playAgainButton {
+  align-self: center;
 }
 #playButton:hover,
 #playAgainButton:hover,
