@@ -63,16 +63,18 @@ body {
   align-items: center;
   gap: 20px;
   color: white;
-  background-color: rgba(127, 255, 212, 0.15);
+  background-color: black;
   border: 4px solid rgb(127, 255, 212);
   border-radius: 20px;
   font-size: 18px;
   padding: 20px;
   width: 81%;
 }
-
+#startGameContainer {
+  background-color: rgba(127, 255, 212, 0.2);
+}
 #gameOverContainer {
-  background-color: black;
+  width: 99%;
 }
 #gameOverContainer span:nth-child(1) {
   align-self: center;

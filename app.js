@@ -8,10 +8,12 @@ Module.onRuntimeInitialized = async function () {
   const blockSize = 32 //px
   const nFieldWidth = 12
   const nFieldHeight = 18
+  const offsetX = 2
+  const offsetY = 2
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#6d28d9", "#d946ef", "#f8fafc"]
 
-  canvas.width = blockSize * nFieldWidth
-  canvas.height = blockSize * nFieldHeight
+  canvas.width = blockSize * nFieldWidth + offsetX * 2
+  canvas.height = blockSize * nFieldHeight + offsetY * 2
 
   let game = new Module.Game(false, false, true, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 100)
 
@@ -26,29 +28,45 @@ Module.onRuntimeInitialized = async function () {
         const value = gameBoard.get(index)
 
         if (value === 10) {
+          //Empty space
           c.fillStyle = "black"
           c.strokeStyle = "white"
-          c.lineWidth = 0.1
+          c.lineWidth = 0.15
+          // Draw border
+          c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else if (value === 9) {
+          //Border
           c.shadowBlur = 5
           c.shadowColor = "aquamarine"
           c.strokeStyle = "aquamarine"
-          c.lineWidth = 3
+          c.lineWidth = 1
+          // Draw border
+          c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else {
-          c.strokeStyle = tetrominoColors[value]
-          c.lineWidth = 3
+          c.strokeStyle = "aquamarine" //tetrominoColors[value]
+          c.lineWidth = 2
+          // Draw border
+          c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         }
 
-        c.fillRect(x * blockSize, y * blockSize, blockSize, blockSize)
-        // Draw border
-        c.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize)
-        // Draw diagonal
-        if (value !== 9) {
+        // Draw diagonals
+        if (value !== 10 && value !== 9) {
+          //Placed tetrominos
+          c.lineWidth = 1
+          //c.shadowBlur = 10
+          //c.shadowColor = "aquamarine"
           c.beginPath()
-          c.moveTo(x * blockSize, y * blockSize)
-          c.lineTo((x + 1) * blockSize, (y + 1) * blockSize)
+          c.moveTo(x * blockSize + offsetX, y * blockSize + offsetY)
+          c.lineTo((x + 1) * blockSize + offsetX, (y + 1) * blockSize + offsetY)
           c.stroke()
+          c.closePath()
+          c.beginPath()
+          c.moveTo(x * blockSize + blockSize + offsetX, y * blockSize + offsetY) // Top right corner
+          c.lineTo(x * blockSize + offsetX, y * blockSize + blockSize + offsetY) // Bottom left corner
+          c.stroke()
+          c.closePath()
         }
+
         //kill shadows
         c.shadowBlur = 0
         c.shadowColor = "black"
@@ -65,16 +83,18 @@ Module.onRuntimeInitialized = async function () {
       for (let py = 0; py < 4; py++) {
         let rotatedIndex = Module.Rotate(px, py, nCurrentRotation)
         if (tetromino.get(rotatedIndex) === 1) {
-          //c.fillStyle = tetrominoColors[nCurrentPiece]
-          //c.fillRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
-
           // Set glow effect
           c.shadowBlur = 12
           c.shadowColor = tetrominoColors[nCurrentPiece]
           // Draw border
           c.strokeStyle = tetrominoColors[nCurrentPiece]
-          c.lineWidth = 3
-          c.strokeRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
+          c.lineWidth = 4
+          c.strokeRect(
+            (nCurrentX + px) * blockSize + offsetX,
+            (nCurrentY + py) * blockSize + offsetY,
+            blockSize,
+            blockSize
+          )
           c.shadowBlur = 0
           c.shadowColor = "black"
         }
