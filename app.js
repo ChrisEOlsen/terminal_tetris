@@ -110,9 +110,13 @@ Module.onRuntimeInitialized = async function () {
           game.moveTetromino(3)
           break
         case "Escape":
-          if (!document.getElementById("pauseGameContainer") && !document.getElementById("startGameContainer")) {
+          if (document.getElementById("startGameContainer") || document.getElementById("gameOverContainer")) return
+          if (!document.getElementById("pauseGameContainer")) {
             game.pauseGame()
             displayPausePage()
+          } else if (document.getElementById("pauseGameContainer")) {
+            game.resumeGame()
+            document.getElementById("pauseGameContainer").remove()
           }
           break
       }
