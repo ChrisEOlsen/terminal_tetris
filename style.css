@@ -18,9 +18,14 @@ body {
   width: 100vw;
   height: 100dvh;
   background-color: black;
-  background-image: linear-gradient(#1e40af, #083344);
   background-repeat: no-repeat;
   background-size: cover;
+  position: relative;
+}
+#cornerButtons {
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
 #subContainer {
@@ -28,7 +33,9 @@ body {
   height: fit-content;
   position: relative;
 }
-#game-canvas {
+
+#cornerPause:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 #scoreBoard {
@@ -56,18 +63,19 @@ body {
   align-items: center;
   gap: 20px;
   color: white;
-  background-color: black;
-  border: 4px dashed white;
+  background-color: rgba(127, 255, 212, 0.15);
+  border: 4px solid rgb(127, 255, 212);
+  border-radius: 20px;
   font-size: 18px;
   padding: 20px;
-  width: 90%;
+  width: 81%;
 }
+
 #gameOverContainer {
-  align-items: start;
+  background-color: black;
 }
 #gameOverContainer span:nth-child(1) {
   align-self: center;
-  color: white;
 }
 
 #playButton,
@@ -75,7 +83,7 @@ body {
 #resumeButton {
   color: white;
   background-color: black;
-  border: 2px dashed white;
+  border: 2px solid aquamarine;
   padding: 8px 20px;
   font-size: 16px;
   border-radius: 3px;
@@ -88,5 +96,6 @@ body {
 #playAgainButton:hover,
 #resumeButton:hover {
   cursor: pointer;
-  background-color: orange;
+  background-color: aquamarine;
+  color: black;
 }

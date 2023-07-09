@@ -13,7 +13,7 @@ Module.onRuntimeInitialized = async function () {
   canvas.width = blockSize * nFieldWidth
   canvas.height = blockSize * nFieldHeight
 
-  let game = new Module.Game(false, false, false, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 100)
+  let game = new Module.Game(false, false, true, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 100)
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -27,18 +27,31 @@ Module.onRuntimeInitialized = async function () {
 
         if (value === 10) {
           c.fillStyle = "black"
+          c.strokeStyle = "white"
+          c.lineWidth = 0.1
         } else if (value === 9) {
-          c.fillStyle = "gray"
+          c.shadowBlur = 5
+          c.shadowColor = "aquamarine"
+          c.strokeStyle = "aquamarine"
+          c.lineWidth = 3
         } else {
-          c.fillStyle = tetrominoColors[value]
+          c.strokeStyle = tetrominoColors[value]
+          c.lineWidth = 3
         }
 
         c.fillRect(x * blockSize, y * blockSize, blockSize, blockSize)
-
         // Draw border
-        c.strokeStyle = "white"
-        c.lineWidth = 0.1
         c.strokeRect(x * blockSize, y * blockSize, blockSize, blockSize)
+        // Draw diagonal
+        if (value !== 9) {
+          c.beginPath()
+          c.moveTo(x * blockSize, y * blockSize)
+          c.lineTo((x + 1) * blockSize, (y + 1) * blockSize)
+          c.stroke()
+        }
+        //kill shadows
+        c.shadowBlur = 0
+        c.shadowColor = "black"
       }
     }
     let nCurrentX = game.getCurrentX()
@@ -52,12 +65,18 @@ Module.onRuntimeInitialized = async function () {
       for (let py = 0; py < 4; py++) {
         let rotatedIndex = Module.Rotate(px, py, nCurrentRotation)
         if (tetromino.get(rotatedIndex) === 1) {
-          c.fillStyle = tetrominoColors[nCurrentPiece]
-          c.fillRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
+          //c.fillStyle = tetrominoColors[nCurrentPiece]
+          //c.fillRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
+
+          // Set glow effect
+          c.shadowBlur = 12
+          c.shadowColor = tetrominoColors[nCurrentPiece]
           // Draw border
-          c.strokeStyle = "white"
-          c.lineWidth = 1
+          c.strokeStyle = tetrominoColors[nCurrentPiece]
+          c.lineWidth = 3
           c.strokeRect((nCurrentX + px) * blockSize, (nCurrentY + py) * blockSize, blockSize, blockSize)
+          c.shadowBlur = 0
+          c.shadowColor = "black"
         }
       }
 
@@ -101,6 +120,7 @@ Module.onRuntimeInitialized = async function () {
 
     projectContainer.addEventListener("click", e => {
       if (e.target.id == "playButton") {
+        game.resumeGame() //Stop user input until game starts
         gameLoop()
         document.getElementById("startGameContainer").remove()
       }
@@ -108,10 +128,6 @@ Module.onRuntimeInitialized = async function () {
         game.restartGame()
         gameLoop()
         document.getElementById("gameOverContainer").remove()
-      }
-      if (e.target.id == "pauseButton") {
-        // Not yet created
-        game.pauseGame()
       }
       if (e.target.id == "resumeButton") {
         game.resumeGame()
@@ -132,21 +148,11 @@ Module.onRuntimeInitialized = async function () {
   }
   initEvents()
   draw() //Draw Board just as a background before game starts
-  displayStartPage()
+  displayStartComponents()
 
   //COMPONENTS BELOW:
-
-  function createPauseButton() {
-    const pauseButton = document.createElement("button")
-    pauseButton.id = "cornerPause"
-    const pauseIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 19V5h4v14h-4Zm-8 0V5h4v14H6Z"/></svg>`
-    pauseButton.innerHTML = pauseIcon
-  }
-  function createPlayButton() {
-    const playButton = document.createElement("button")
-    playButton.id = "cornerPlay"
-    const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 19V5h4v14h-4Zm-8 0V5h4v14H6Z"/></svg>`
-    playButton.innerHTML = playIcon
+  function displayStartComponents() {
+    displayStartPage()
   }
 
   function displayGameOverPage() {
