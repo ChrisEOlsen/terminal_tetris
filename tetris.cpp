@@ -118,6 +118,7 @@ private:
     bool bGamePaused;
     bool bForceDown;
     int nCurrentPiece;
+    int nNextPiece;
     int nCurrentRotation;
     int nCurrentX;
     int nCurrentY;
@@ -137,9 +138,9 @@ private:
    
 
 public:
-    Game(bool bGameOver, bool bForceDown, bool bGamePaused, int nCurrentPiece, int nCurrentRotation, 
+    Game(bool bGameOver, bool bForceDown, bool bGamePaused, int nNextPiece, int nCurrentPiece, int nCurrentRotation, 
          int nCurrentX, int nCurrentY, int nPieceCount, int nScore, int nDropInterval) 
-        : bGameOver(bGameOver), bForceDown(bForceDown), bGamePaused(bGamePaused),nCurrentPiece(nCurrentPiece),
+        : bGameOver(bGameOver), bForceDown(bForceDown), bGamePaused(bGamePaused), nNextPiece(nNextPiece),nCurrentPiece(nCurrentPiece),
           nCurrentRotation(nCurrentRotation), nCurrentX(nCurrentX), nCurrentY(nCurrentY), nPieceCount(nPieceCount),
           nScore(nScore), nDropInterval(nDropInterval)
     {
@@ -239,7 +240,8 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                 }
 
                 //Reset values of new tetromino
-                nCurrentPiece = rand() % 7;
+                nCurrentPiece = nNextPiece;
+                nNextPiece = rand() % 7;
                 nCurrentRotation = 0;
                 nCurrentX = 5;
                 nCurrentY = -3;
@@ -260,6 +262,10 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
     }
     bool getGameOver(){
         return bGameOver;
+    }
+
+    int getNextPiece(){
+        return nNextPiece;
     }
     int getCurrentPiece() {
         return nCurrentPiece;
@@ -345,10 +351,11 @@ EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("Rotate", &Rotate);
     emscripten::function("getTetromino", &getTetromino);
     emscripten::class_<Game>("Game")
-        .constructor<bool, bool,bool, int, int, int, int, int, int,int>()
+        .constructor<bool, bool,bool,int, int, int, int, int, int, int,int>()
         .function("update", &Game::update)
         .function("getGameBoard", &Game::getGameBoard)
         .function("getGameOver", &Game::getGameOver)
+        .function("getNextPiece", &Game::getNextPiece)
         .function("getCurrentPiece", &Game::getCurrentPiece)
         .function("getCurrentRotation", &Game::getCurrentRotation)
         .function("getCurrentX", &Game::getCurrentX)

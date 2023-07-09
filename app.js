@@ -10,12 +10,24 @@ Module.onRuntimeInitialized = async function () {
   const nFieldHeight = 18
   const offsetX = 2
   const offsetY = 2
-  const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#6d28d9", "#d946ef", "#f8fafc"]
+  const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#e11d48", "#d946ef", "#f8fafc"]
 
   canvas.width = blockSize * nFieldWidth + offsetX * 2
   canvas.height = blockSize * nFieldHeight + offsetY * 2
 
-  let game = new Module.Game(false, false, true, randomIntFromRange(0, 6), 0, 4, -4, 0, 0, 100)
+  let game = new Module.Game(
+    false,
+    false,
+    true,
+    randomIntFromRange(0, 6),
+    randomIntFromRange(1, 6),
+    0,
+    4,
+    -4,
+    0,
+    0,
+    100
+  )
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -35,13 +47,8 @@ Module.onRuntimeInitialized = async function () {
           // Draw border
           c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else if (value === 9) {
-          //Border
-          c.shadowBlur = 5
-          c.shadowColor = "aquamarine"
-          c.strokeStyle = "aquamarine"
-          c.lineWidth = 1
-          // Draw border
-          c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
+          c.fillStyle = "black"
+          c.fillRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else {
           c.strokeStyle = "aquamarine" //tetrominoColors[value]
           c.lineWidth = 2
@@ -88,7 +95,7 @@ Module.onRuntimeInitialized = async function () {
           c.shadowColor = tetrominoColors[nCurrentPiece]
           // Draw border
           c.strokeStyle = tetrominoColors[nCurrentPiece]
-          c.lineWidth = 4
+          c.lineWidth = 3
           c.strokeRect(
             (nCurrentX + px) * blockSize + offsetX,
             (nCurrentY + py) * blockSize + offsetY,
@@ -99,6 +106,47 @@ Module.onRuntimeInitialized = async function () {
           c.shadowColor = "black"
         }
       }
+
+    function drawLine(sx, sy, ex, ey) {
+      c.beginPath()
+      c.moveTo(sx, sy)
+      c.lineTo(ex, ey)
+      c.stroke()
+    }
+    //Draw Border Lines
+    //Left border
+    c.strokeStyle = "aquamarine"
+    drawLine(offsetX, offsetY, offsetX, nFieldHeight * blockSize + offsetY)
+    //Inner left border
+    drawLine(offsetX + blockSize, offsetY, offsetX + blockSize, nFieldHeight * blockSize + offsetY - blockSize)
+    //Right border
+    drawLine(
+      nFieldWidth * blockSize + offsetX,
+      offsetY,
+      nFieldWidth * blockSize + offsetX,
+      nFieldHeight * blockSize + offsetY
+    )
+    //Inner right border
+    drawLine(
+      nFieldWidth * blockSize + offsetX - blockSize,
+      offsetY,
+      nFieldWidth * blockSize + offsetX - blockSize,
+      nFieldHeight * blockSize + offsetY - blockSize
+    )
+    // Draw bottom border
+    drawLine(
+      offsetX,
+      nFieldHeight * blockSize + offsetY,
+      nFieldWidth * blockSize + offsetX,
+      nFieldHeight * blockSize + offsetY
+    )
+    //Inner bottom border
+    drawLine(
+      offsetX + blockSize,
+      nFieldHeight * blockSize + offsetY - blockSize,
+      nFieldWidth * blockSize + offsetX - blockSize,
+      nFieldHeight * blockSize + offsetY - blockSize
+    )
 
     //Draw Score Board
     scoreBoard.textContent = `Score:${game.getScore().toString()}`
