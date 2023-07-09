@@ -3,7 +3,9 @@ Module.onRuntimeInitialized = async function () {
   const subContainer = document.getElementById("subContainer")
   const scoreBoard = document.getElementById("scoreBoard")
   const canvas = document.getElementById("game-canvas")
+  const nextPieceCanvas = document.getElementById("nextPiece")
   var c = canvas.getContext("2d")
+  var cn = nextPieceCanvas.getContext("2d")
 
   const blockSize = 32 //px
   const nFieldWidth = 12
@@ -14,6 +16,8 @@ Module.onRuntimeInitialized = async function () {
 
   canvas.width = blockSize * nFieldWidth + offsetX * 2
   canvas.height = blockSize * nFieldHeight + offsetY * 2
+  nextPieceCanvas.width = blockSize * 4
+  nextPieceCanvas.height = blockSize * 4
 
   let game = new Module.Game(
     false,
@@ -32,6 +36,7 @@ Module.onRuntimeInitialized = async function () {
   const draw = () => {
     let gameBoard = game.getGameBoard()
     c.clearRect(0, 0, canvas.width, canvas.height)
+    cn.clearRect(0, 0, nextPieceCanvas.width, nextPieceCanvas.height)
 
     //Draw Field
     for (let x = 0; x < nFieldWidth; x++) {
@@ -82,8 +87,10 @@ Module.onRuntimeInitialized = async function () {
     let nCurrentX = game.getCurrentX()
     let nCurrentY = game.getCurrentY()
     let nCurrentPiece = game.getCurrentPiece()
+    let nNextPiece = game.getNextPiece()
     let nCurrentRotation = game.getCurrentRotation()
     let tetromino = Module.getTetromino(nCurrentPiece)
+    let nextTetromino = Module.getTetromino(nNextPiece)
 
     //Draw Tetromino
     for (let px = 0; px < 4; px++)
@@ -105,6 +112,17 @@ Module.onRuntimeInitialized = async function () {
           c.shadowBlur = 0
           c.shadowColor = "black"
         }
+
+        //Draw Next Piece in seperate canvas
+        if (nextTetromino.get(py * 4 + px) == 1) {
+          cn.shadowBlur = 12
+          cn.shadowColor = tetrominoColors[nNextPiece]
+          cn.strokeStyle = tetrominoColors[nNextPiece]
+          cn.lineWidth = 2
+          cn.strokeRect(px * blockSize, py * blockSize, blockSize, blockSize)
+        }
+        cn.shadowBlur = 0
+        cn.shadowColor = "black"
       }
 
     function drawLine(sx, sy, ex, ey) {
