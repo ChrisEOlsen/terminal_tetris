@@ -46,15 +46,12 @@ body {
 }
 
 #scoreBoard {
-  width: fit-content;
-  height: fit-content;
-  font-size: 16px;
-  padding: 10px;
-  color: white;
+  border: 3px solid aquamarine;
+  border-radius: 8px;
   position: absolute;
   left: 0;
-  top: 0;
-  transform: translate(-100%, 0);
+  bottom: 50%;
+  transform: translate(calc(-100% - 10px), 35%);
 }
 
 #gameOverContainer,

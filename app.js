@@ -1,15 +1,16 @@
 Module.onRuntimeInitialized = async function () {
   const projectContainer = document.getElementById("projectContainer")
   const subContainer = document.getElementById("subContainer")
-  const scoreBoard = document.getElementById("scoreBoard")
   const canvas = document.getElementById("game-canvas")
   const nextPieceCanvas = document.getElementById("nextPiece")
+  const scoreBoard = document.getElementById("scoreBoard")
   var c = canvas.getContext("2d")
   var cn = nextPieceCanvas.getContext("2d")
+  var cs = scoreBoard.getContext("2d")
 
   const blockSize = 32 //px
   const nFieldWidth = 12
-  const nFieldHeight = 18
+  const nFieldHeight = 21
   const offsetX = 2
   const offsetY = 2
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#e11d48", "#d946ef", "#f8fafc"]
@@ -18,8 +19,10 @@ Module.onRuntimeInitialized = async function () {
   canvas.height = blockSize * nFieldHeight + offsetY * 2
   nextPieceCanvas.width = blockSize * 4
   nextPieceCanvas.height = blockSize * 4
+  scoreBoard.width = blockSize * 5
+  scoreBoard.height = blockSize * 8
 
-  let game = new Module.Game(false, false, true, randomIntFromRange(0, 6), randomIntFromRange(1, 6), 0, 4, -4, 0, 0, 50)
+  let game = new Module.Game(false, true, randomIntFromRange(0, 6), randomIntFromRange(1, 6), 0, 4, -4, 0, 0)
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -242,9 +245,20 @@ Module.onRuntimeInitialized = async function () {
     })
   }
 
+  let lastTick = Date.now()
+  let nDropInterval = 1000 //milliseconds
+
   const gameLoop = () => {
-    game.update() // update game state
+    let now = Date.now()
+    let delta = now - lastTick
+
+    if (delta >= nDropInterval && !game.getGamePaused()) {
+      game.update() // update game state
+      lastTick = now // update the last tick time
+    }
+
     draw() // render game state
+
     if (!game.getGameOver()) {
       requestAnimationFrame(gameLoop) // repeat next frame
     } else {

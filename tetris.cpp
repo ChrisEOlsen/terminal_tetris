@@ -109,14 +109,13 @@ int Rotate(int px, int py, int r)
 
 
 int nFieldWidth = 12;
-int nFieldHeight = 18;
+int nFieldHeight = 21;
 
 class Game {
 private:
     vector<int> gameBoard;
     bool bGameOver;
     bool bGamePaused;
-    bool bForceDown;
     int nCurrentPiece;
     int nNextPiece;
     int nCurrentRotation;
@@ -124,8 +123,6 @@ private:
     int nCurrentY;
     int nPieceCount;
     int nScore;
-    int nFrameCount = 0;
-    int nDropInterval;
     vector<int> vLines;
 
     void createGameBoard() {
@@ -138,11 +135,11 @@ private:
    
 
 public:
-    Game(bool bGameOver, bool bForceDown, bool bGamePaused, int nNextPiece, int nCurrentPiece, int nCurrentRotation, 
-         int nCurrentX, int nCurrentY, int nPieceCount, int nScore, int nDropInterval) 
-        : bGameOver(bGameOver), bForceDown(bForceDown), bGamePaused(bGamePaused), nNextPiece(nNextPiece),nCurrentPiece(nCurrentPiece),
+    Game(bool bGameOver, bool bGamePaused, int nNextPiece, int nCurrentPiece, int nCurrentRotation, 
+         int nCurrentX, int nCurrentY, int nPieceCount, int nScore) 
+        : bGameOver(bGameOver), bGamePaused(bGamePaused), nNextPiece(nNextPiece),nCurrentPiece(nCurrentPiece),
           nCurrentRotation(nCurrentRotation), nCurrentX(nCurrentX), nCurrentY(nCurrentY), nPieceCount(nPieceCount),
-          nScore(nScore), nDropInterval(nDropInterval)
+          nScore(nScore)
     {
         srand(time(NULL));
         createGameBoard();
@@ -179,82 +176,73 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 
     void update() {
-        if(!bGamePaused)
-            nFrameCount++;
 
-        bForceDown = (nFrameCount == nDropInterval);
-        
-        if(bForceDown){
-            nFrameCount = 0;                
-
-            if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
-                nCurrentY += 1;
-            }else{
-        
-                //the tetromino has reached its end point -> Stick it to gameBoard
-                for(int px = 0; px < 4; px++)
-                    for(int py = 0; py < 4; py++){
-                        int pi = Rotate(px, py, nCurrentRotation); // Index of cell in tetromino
-                        int fi = (nCurrentY + py) * nFieldWidth + (nCurrentX + px); // Respective index in field
-                        // Check if the fi is within gameBoard's boundaries
-                        if (fi < 0 || fi >= gameBoard.size()) {
-                            continue;
-                        }
-                        if(tetrominos[nCurrentPiece][pi] == 1){
-                            gameBoard[fi] = nCurrentPiece;
-                        }
+        if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
+            nCurrentY += 1;
+        }else{
+    
+            //the tetromino has reached its end point -> Stick it to gameBoard
+            for(int px = 0; px < 4; px++)
+                for(int py = 0; py < 4; py++){
+                    int pi = Rotate(px, py, nCurrentRotation); // Index of cell in tetromino
+                    int fi = (nCurrentY + py) * nFieldWidth + (nCurrentX + px); // Respective index in field
+                    // Check if the fi is within gameBoard's boundaries
+                    if (fi < 0 || fi >= gameBoard.size()) {
+                        continue;
                     }
-
-              // Check for full lines starting from top to bottom
-                int clearedLines = 0; // Add this line to keep track of cleared lines
-                for(int py = 1; py < nFieldHeight - 1; ++py) { 
-                    bool lineIsFull = true;
-                    for(int px = 1; px < nFieldWidth - 1; ++px) { 
-                        if (gameBoard[py * nFieldWidth + px] == 10) {
-                            lineIsFull = false;
-                            break;
-                        }
+                    if(tetrominos[nCurrentPiece][pi] == 1){
+                        gameBoard[fi] = nCurrentPiece;
                     }
+                }
 
-                    if (lineIsFull) {
-                        // If line is full, move all lines above it one step down
-                        for (int j = py; j > 1; --j) { 
-                            for (int px = 1; px < nFieldWidth - 1; ++px) { 
-                                gameBoard[j * nFieldWidth + px] = gameBoard[(j - 1) * nFieldWidth + px];
-                            }
-                        }
-                        // The topmost line within the borders has no line above it, fill it with 10s.
+            // Check for full lines starting from top to bottom
+            int clearedLines = 0; // Add this line to keep track of cleared lines
+            for(int py = 1; py < nFieldHeight - 1; ++py) { 
+                bool lineIsFull = true;
+                for(int px = 1; px < nFieldWidth - 1; ++px) { 
+                    if (gameBoard[py * nFieldWidth + px] == 10) {
+                        lineIsFull = false;
+                        break;
+                    }
+                }
+
+                if (lineIsFull) {
+                    // If line is full, move all lines above it one step down
+                    for (int j = py; j > 1; --j) { 
                         for (int px = 1; px < nFieldWidth - 1; ++px) { 
-                            gameBoard[1 * nFieldWidth + px] = 10; 
+                            gameBoard[j * nFieldWidth + px] = gameBoard[(j - 1) * nFieldWidth + px];
                         }
-
-                        // Line was cleared, increment counter
-                        clearedLines++;
                     }
+                    // The topmost line within the borders has no line above it, fill it with 10s.
+                    for (int px = 1; px < nFieldWidth - 1; ++px) { 
+                        gameBoard[1 * nFieldWidth + px] = 10; 
+                    }
+
+                    // Line was cleared, increment counter
+                    clearedLines++;
                 }
-
-                // Calculate score
-                nScore += 25 * clearedLines; // base score for line clearance
-                if (clearedLines > 0) {
-                    nScore += (1 << clearedLines) * 100; // bonus for clearing multiple lines
-                }
-
-                //Reset values of new tetromino
-                nCurrentPiece = nNextPiece;
-                nNextPiece = rand() % 7;
-                nCurrentRotation = 0;
-                nCurrentX = 5;
-                nCurrentY = -3;
-
-                //Calibrate speed throughout game
-                nPieceCount++;
-                if(nPieceCount % 2 == 0)
-                    if(nDropInterval >= 10) nDropInterval -= 2;
-
-                // If piece does not fit straight away, game over!
-				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
             }
+
+            // Calculate score
+            nScore += 25 * clearedLines; // base score for line clearance
+            if (clearedLines > 0) {
+                nScore += (1 << clearedLines) * 100; // bonus for clearing multiple lines
+            }
+
+            //Reset values of new tetromino
+            nCurrentPiece = nNextPiece;
+            nNextPiece = rand() % 7;
+            nCurrentRotation = 0;
+            nCurrentX = 5;
+            nCurrentY = -3;
+
+            //Calibrate speed throughout game
+            nPieceCount++;
+
+            // If piece does not fit straight away, game over!
+            bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
         }
+        
     }
 
     vector<int> getGameBoard() {
@@ -285,6 +273,13 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
     int getScore(){
         return nScore;
+    }
+    
+    int getPieceCount(){
+        return nPieceCount;
+    }
+    int getGamePaused(){
+        return bGamePaused;
     }
 
 
@@ -325,12 +320,13 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
     void restartGame(){
         //Reset values for new game
         bGameOver = false;
+        bGamePaused = false;
         nCurrentPiece = rand() % 7;
         nCurrentRotation = 0;
         nCurrentX = 5;
         nCurrentY = -3;
         nScore = 0; 
-        nDropInterval = 100;
+        nPieceCount = 0;
         createGameBoard();
     }
     
@@ -351,7 +347,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("Rotate", &Rotate);
     emscripten::function("getTetromino", &getTetromino);
     emscripten::class_<Game>("Game")
-        .constructor<bool, bool,bool,int, int, int, int, int, int, int,int>()
+        .constructor<bool, bool, int, int, int, int, int, int, int>()
         .function("update", &Game::update)
         .function("getGameBoard", &Game::getGameBoard)
         .function("getGameOver", &Game::getGameOver)
@@ -361,13 +357,14 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .function("getCurrentX", &Game::getCurrentX)
         .function("getCurrentY", &Game::getCurrentY)
         .function("getScore", &Game::getScore)
+        .function("getPieceCount", &Game::getPieceCount)
+        .function("getGamePaused", &Game::getGamePaused)
         .function("moveTetromino", &Game::moveTetromino)
         .function("rotateTetromino", &Game::rotateTetromino)
         .function("restartGame", &Game::restartGame)
         .function("pauseGame", &Game::pauseGame)
         .function("resumeGame", &Game::resumeGame);
 }
-
 
 
 
