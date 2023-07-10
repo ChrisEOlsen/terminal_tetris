@@ -196,7 +196,7 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                 }
 
             // Check for full lines starting from top to bottom
-            int clearedLines = 0; // Add this line to keep track of cleared lines
+            int clearedLines = 0;
             for(int py = 1; py < nFieldHeight - 1; ++py) { 
                 bool lineIsFull = true;
                 for(int px = 1; px < nFieldWidth - 1; ++px) { 

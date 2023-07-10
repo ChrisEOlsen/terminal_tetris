@@ -28,6 +28,7 @@ Module.onRuntimeInitialized = async function () {
     let gameBoard = game.getGameBoard()
     c.clearRect(0, 0, canvas.width, canvas.height)
     cn.clearRect(0, 0, nextPieceCanvas.width, nextPieceCanvas.height)
+    cs.clearRect(0, 0, scoreBoard.width, scoreBoard.height)
 
     //Draw Field
     for (let x = 0; x < nFieldWidth; x++) {
@@ -142,6 +143,14 @@ Module.onRuntimeInitialized = async function () {
         }
         cn.shadowBlur = 0
         cn.shadowColor = "black"
+
+        //Draw scoreBoard in seperate canvas (cs)
+        cs.font = '20px "Press Start 2P"'
+        cs.fillStyle = "aquamarine"
+        cs.fillText(`TOP`, 20, scoreBoard.height / 2 - 40)
+        cs.fillText(`${localStorage.getItem("highScore")}`, 20, scoreBoard.height / 2 - 16)
+        cs.fillText(`SCORE`, 20, scoreBoard.height / 2 + 20)
+        cs.fillText(`${game.getScore()}`, 20, scoreBoard.height / 2 + 44)
       }
 
     function drawLine(sx, sy, ex, ey) {
@@ -184,9 +193,6 @@ Module.onRuntimeInitialized = async function () {
       nFieldWidth * blockSize + offsetX - blockSize,
       nFieldHeight * blockSize + offsetY - blockSize
     )
-
-    //Draw Score Board
-    scoreBoard.textContent = `Score:${game.getScore().toString()}`
   }
 
   //Handle User Input
@@ -235,6 +241,7 @@ Module.onRuntimeInitialized = async function () {
       }
       if (e.target.id == "playAgainButton") {
         game.restartGame()
+        nDropInterval = startSpeed
         gameLoop()
         document.getElementById("gameOverContainer").remove()
       }
@@ -245,8 +252,10 @@ Module.onRuntimeInitialized = async function () {
     })
   }
 
+  let startSpeed = 900 //milliseconds
+  //Game tick start variables
   let lastTick = Date.now()
-  let nDropInterval = 1000 //milliseconds
+  let nDropInterval = startSpeed
 
   const gameLoop = () => {
     let now = Date.now()
@@ -255,6 +264,7 @@ Module.onRuntimeInitialized = async function () {
     if (delta >= nDropInterval && !game.getGamePaused()) {
       game.update() // update game state
       lastTick = now // update the last tick time
+      if (game.getPieceCount() % 2 == 0 && nDropInterval > 150) nDropInterval -= 10 //Change gamespeed
     }
 
     draw() // render game state
