@@ -19,19 +19,7 @@ Module.onRuntimeInitialized = async function () {
   nextPieceCanvas.width = blockSize * 4
   nextPieceCanvas.height = blockSize * 4
 
-  let game = new Module.Game(
-    false,
-    false,
-    true,
-    randomIntFromRange(0, 6),
-    randomIntFromRange(1, 6),
-    0,
-    4,
-    -4,
-    0,
-    0,
-    100
-  )
+  let game = new Module.Game(false, false, true, randomIntFromRange(0, 6), randomIntFromRange(1, 6), 0, 4, -4, 0, 0, 50)
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -113,13 +101,41 @@ Module.onRuntimeInitialized = async function () {
           c.shadowColor = "black"
         }
 
-        //Draw Next Piece in seperate canvas
+        let nextOffsetX = 0
+        let nextOffsetY = 0
+        if (nNextPiece === 0) {
+          nextOffsetX = 0
+          nextOffsetY = 12
+        } else if (nNextPiece === 1) {
+          nextOffsetX = 25
+          nextOffsetY = 10
+        } else if (nNextPiece === 2) {
+          nextOffsetX = 12
+          nextOffsetY = 13
+        } else if (nNextPiece === 3) {
+          nextOffsetX = 10
+          nextOffsetY = 23
+        } else if (nNextPiece === 4) {
+          nextOffsetX = 14
+          nextOffsetY = 23
+        } else if (nNextPiece === 5 || nNextPiece === 6) {
+          nextOffsetX = 10
+          nextOffsetY = 25
+        }
+
+        //Draw Next Piece in seperate canvas (cn)
         if (nextTetromino.get(py * 4 + px) == 1) {
           cn.shadowBlur = 12
           cn.shadowColor = tetrominoColors[nNextPiece]
           cn.strokeStyle = tetrominoColors[nNextPiece]
           cn.lineWidth = 2
-          cn.strokeRect(px * blockSize, py * blockSize, blockSize, blockSize)
+          //change offsets based on piece
+          cn.strokeRect(
+            px * (blockSize / 1.25) + nextOffsetX,
+            py * (blockSize / 1.25) + nextOffsetY,
+            blockSize / 1.25,
+            blockSize / 1.25
+          )
         }
         cn.shadowBlur = 0
         cn.shadowColor = "black"

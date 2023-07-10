@@ -248,8 +248,8 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
                 //Calibrate speed throughout game
                 nPieceCount++;
-                if(nPieceCount % 4 == 0)
-                    if(nDropInterval >= 20) nDropInterval -= 4;
+                if(nPieceCount % 2 == 0)
+                    if(nDropInterval >= 10) nDropInterval -= 2;
 
                 // If piece does not fit straight away, game over!
 				bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
