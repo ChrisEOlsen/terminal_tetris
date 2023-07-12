@@ -109,7 +109,7 @@ int Rotate(int px, int py, int r)
 
 
 int nFieldWidth = 12;
-int nFieldHeight = 21;
+int nFieldHeight = 23;
 
 class Game {
 private:
@@ -158,6 +158,7 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
             // Check that test is bounds, Note out of bounds does
             // not necessarily mean fail
+
             if (nPosX + px >= 0 && nPosX + px < nFieldWidth)
             {
                 if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
@@ -166,13 +167,38 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
                     vector<int> tetromino = tetrominos[nTetromino]; 
 
                     // In Bounds so do collision check
-                    if (tetromino[pi] != 0 && gameBoard[fi] != 10) 
+                    if (tetromino[pi] != 0 && gameBoard[fi] != 10)
                         return false; // fail on first hit
                 }
             }
         }
     return true; // No fail condition has been met
 }
+//Needed due to tetromino being spawned in -y axis 
+bool isInBoundsX(int nTetromino, int nRotation, int nPosX)
+{
+    for (int px = 0; px < 4; px++)
+        for(int py = 0; py < 4; py++)
+        {
+            //Get index into piece
+            int pi = Rotate(px,py,nRotation);
+
+            //Get tetromino piece
+            vector<int> tetromino = tetrominos[nTetromino]; 
+
+            // if it's part of the tetromino
+            if (tetromino[pi] != 0)
+            {
+                // if it's outside the game board on the left or right
+                if (nPosX + px <= 0 || nPosX + px >= nFieldWidth - 1)
+                {
+                    return false; // out of bounds
+                }
+            }
+        }
+    return true; // No fail condition has been met
+}
+
 
 
     void update() {
@@ -284,26 +310,27 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
 
     //Input functions
-    void moveTetromino(int val){
-        if(bGamePaused || bGameOver) return;
-        if(val == 0){
-            if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
-                nCurrentX--;
-            }
-        }else if(val == 1){
-            if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)){
-                nCurrentX++;
-            }
-        }else if(val == 2){
-            if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
-                nCurrentY++;
-            }
-        }else if(val == 3){
-            while(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
-                nCurrentY++;
-            }
+void moveTetromino(int val){
+    if(bGamePaused || bGameOver) return;
+    if(val == 0){
+        if(isInBoundsX(nCurrentPiece, nCurrentRotation, nCurrentX - 1) && checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
+            nCurrentX--;
+        }
+    }else if(val == 1){
+        if(isInBoundsX(nCurrentPiece, nCurrentRotation, nCurrentX + 1) && checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)){
+            nCurrentX++;
+        }
+    }else if(val == 2){
+        if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
+            nCurrentY++;
+        }
+    }else if(val == 3){
+        while(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
+            nCurrentY++;
         }
     }
+}
+
 
     void rotateTetromino(int val){
     if(bGamePaused || bGameOver) return;
@@ -324,7 +351,7 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
         nCurrentPiece = rand() % 7;
         nCurrentRotation = 0;
         nCurrentX = 5;
-        nCurrentY = -3;
+        nCurrentY = -4;
         nScore = 0; 
         nPieceCount = 0;
         createGameBoard();

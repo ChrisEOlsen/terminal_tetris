@@ -10,7 +10,7 @@ Module.onRuntimeInitialized = async function () {
 
   const blockSize = 32 //px
   const nFieldWidth = 12
-  const nFieldHeight = 21
+  const nFieldHeight = 23
   const offsetX = 2
   const offsetY = 2
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#e11d48", "#d946ef", "#f8fafc"]
@@ -145,12 +145,12 @@ Module.onRuntimeInitialized = async function () {
         cn.shadowColor = "black"
 
         //Draw scoreBoard in seperate canvas (cs)
-        cs.font = '20px "Press Start 2P"'
+        cs.font = '22px "Press Start 2P"'
         cs.fillStyle = "aquamarine"
         cs.fillText(`TOP`, 20, scoreBoard.height / 2 - 40)
-        cs.fillText(`${localStorage.getItem("highScore")}`, 20, scoreBoard.height / 2 - 16)
+        cs.fillText(`${localStorage.getItem("highScore")}`, 20, scoreBoard.height / 2 - 14)
         cs.fillText(`SCORE`, 20, scoreBoard.height / 2 + 20)
-        cs.fillText(`${game.getScore()}`, 20, scoreBoard.height / 2 + 44)
+        cs.fillText(`${game.getScore()}`, 20, scoreBoard.height / 2 + 46)
       }
 
     function drawLine(sx, sy, ex, ey) {
@@ -215,7 +215,7 @@ Module.onRuntimeInitialized = async function () {
 
         case "ArrowDown":
           game.moveTetromino(2)
-          break
+          breakzzzzz
 
         case "Space":
           game.moveTetromino(3)

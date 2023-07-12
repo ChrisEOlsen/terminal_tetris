@@ -33,10 +33,11 @@ body {
   height: fit-content;
   position: relative;
 }
+
 #nextPiece {
   position: absolute;
   background-color: black;
-  transform: translate(10px);
+  transform: translate(10px, 95px);
   border: 3px solid aquamarine;
   border-radius: 8px;
 }
