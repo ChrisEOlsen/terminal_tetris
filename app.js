@@ -82,6 +82,7 @@ Module.onRuntimeInitialized = async function () {
     let nNextPiece = game.getNextPiece()
     let nCurrentRotation = game.getCurrentRotation()
     let tetromino = Module.getTetromino(nCurrentPiece)
+    let shadowY = nCurrentY
     let nextTetromino = Module.getTetromino(nNextPiece)
 
     //Draw Tetromino
@@ -101,6 +102,58 @@ Module.onRuntimeInitialized = async function () {
             blockSize,
             blockSize
           )
+
+          //Find shadowY limit, then draw.
+          if (!game.getGamePaused() && !game.getGameOver()) {
+            while (game.checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, shadowY + 1)) {
+              shadowY++
+            }
+            // Check neighboring cells
+            const top = py > 0 ? tetromino.get(Module.Rotate(px, py - 1, nCurrentRotation)) : 0
+            const right = px < 3 ? tetromino.get(Module.Rotate(px + 1, py, nCurrentRotation)) : 0
+            const bottom = py < 3 ? tetromino.get(Module.Rotate(px, py + 1, nCurrentRotation)) : 0
+            const left = px > 0 ? tetromino.get(Module.Rotate(px - 1, py, nCurrentRotation)) : 0
+
+            // Draw top line
+            if (top === 0) {
+              drawLine(
+                (nCurrentX + px) * blockSize + offsetX,
+                (shadowY + py) * blockSize + offsetY,
+                (nCurrentX + px + 1) * blockSize + offsetX,
+                (shadowY + py) * blockSize + offsetY
+              )
+            }
+
+            // Draw right line
+            if (right === 0) {
+              drawLine(
+                (nCurrentX + px + 1) * blockSize + offsetX,
+                (shadowY + py) * blockSize + offsetY,
+                (nCurrentX + px + 1) * blockSize + offsetX,
+                (shadowY + py + 1) * blockSize + offsetY
+              )
+            }
+
+            // Draw bottom line
+            if (bottom === 0) {
+              drawLine(
+                (nCurrentX + px + 1) * blockSize + offsetX,
+                (shadowY + py + 1) * blockSize + offsetY,
+                (nCurrentX + px) * blockSize + offsetX,
+                (shadowY + py + 1) * blockSize + offsetY
+              )
+            }
+
+            // Draw left line
+            if (left === 0) {
+              drawLine(
+                (nCurrentX + px) * blockSize + offsetX,
+                (shadowY + py + 1) * blockSize + offsetY,
+                (nCurrentX + px) * blockSize + offsetX,
+                (shadowY + py) * blockSize + offsetY
+              )
+            }
+          }
           c.shadowBlur = 0
           c.shadowColor = "black"
         }
@@ -153,12 +206,6 @@ Module.onRuntimeInitialized = async function () {
         cs.fillText(`${game.getScore()}`, 20, scoreBoard.height / 2 + 46)
       }
 
-    function drawLine(sx, sy, ex, ey) {
-      c.beginPath()
-      c.moveTo(sx, sy)
-      c.lineTo(ex, ey)
-      c.stroke()
-    }
     //Draw Border Lines
     //Left border
     c.strokeStyle = "aquamarine"
@@ -350,8 +397,15 @@ Module.onRuntimeInitialized = async function () {
     }
   }
 
-  //Utility function
+  //Utility functions
   function randomIntFromRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  function drawLine(sx, sy, ex, ey) {
+    c.beginPath()
+    c.moveTo(sx, sy)
+    c.lineTo(ex, ey)
+    c.stroke()
   }
 }

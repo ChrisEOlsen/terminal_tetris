@@ -375,6 +375,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("getTetromino", &getTetromino);
     emscripten::class_<Game>("Game")
         .constructor<bool, bool, int, int, int, int, int, int, int>()
+        .function("checkCollision", &Game::checkCollision)
         .function("update", &Game::update)
         .function("getGameBoard", &Game::getGameBoard)
         .function("getGameOver", &Game::getGameOver)
