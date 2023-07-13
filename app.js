@@ -1,3 +1,6 @@
+import { utils } from "./utils.js"
+import { components } from "./components.js"
+
 Module.onRuntimeInitialized = async function () {
   const projectContainer = document.getElementById("projectContainer")
   const subContainer = document.getElementById("subContainer")
@@ -8,7 +11,7 @@ Module.onRuntimeInitialized = async function () {
   var cn = nextPieceCanvas.getContext("2d")
   var cs = scoreBoard.getContext("2d")
 
-  const blockSize = 32 //px
+  let blockSize = 32 //px
   const nFieldWidth = 12
   const nFieldHeight = 23
   const offsetX = 2
@@ -22,7 +25,17 @@ Module.onRuntimeInitialized = async function () {
   scoreBoard.width = blockSize * 5
   scoreBoard.height = blockSize * 8
 
-  let game = new Module.Game(false, true, randomIntFromRange(0, 6), randomIntFromRange(1, 6), 0, 4, -4, 0, 0)
+  let game = new Module.Game(
+    false,
+    true,
+    utils.randomIntFromRange(0, 6),
+    utils.randomIntFromRange(1, 6),
+    0,
+    4,
+    -4,
+    0,
+    0
+  )
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -242,7 +255,7 @@ Module.onRuntimeInitialized = async function () {
     )
   }
 
-  //Handle User Input
+  //Handle User Input and events
   const initEvents = () => {
     document.addEventListener("keypress", function (event) {
       if (event.key === "z") {
@@ -262,7 +275,7 @@ Module.onRuntimeInitialized = async function () {
 
         case "ArrowDown":
           game.moveTetromino(2)
-          breakzzzzz
+          break
 
         case "Space":
           game.moveTetromino(3)
@@ -271,7 +284,7 @@ Module.onRuntimeInitialized = async function () {
           if (document.getElementById("startGameContainer") || document.getElementById("gameOverContainer")) return
           if (!document.getElementById("pauseGameContainer")) {
             game.pauseGame()
-            displayPausePage()
+            components.displayPausePage()
           } else if (document.getElementById("pauseGameContainer")) {
             game.resumeGame()
             document.getElementById("pauseGameContainer").remove()
@@ -320,7 +333,7 @@ Module.onRuntimeInitialized = async function () {
       requestAnimationFrame(gameLoop) // repeat next frame
     } else {
       saveHighScore()
-      displayGameOverPage()
+      components.displayGameOverPage()
     }
   }
   initEvents()
@@ -329,56 +342,8 @@ Module.onRuntimeInitialized = async function () {
 
   //COMPONENTS BELOW:
   function displayStartComponents() {
-    displayStartPage()
-  }
-
-  function displayGameOverPage() {
-    const gameOverContainer = document.createElement("div")
-    const spanTitle = document.createElement("span")
-    const spanScore = document.createElement("span")
-    const spanHighScore = document.createElement("span")
-    const playAgainButton = document.createElement("button")
-    gameOverContainer.id = "gameOverContainer"
-    playAgainButton.id = "playAgainButton"
-    spanTitle.textContent = "Game Over!"
-    spanScore.textContent = `Score: ${game.getScore().toString()}`
-    if (localStorage.getItem("highScore") !== null) {
-      spanHighScore.textContent = `High score: ${localStorage.getItem("highScore")}`
-    } else {
-      spanHighScore.textContent = `High score: ${game.getScore().toString()}`
-    }
-    playAgainButton.textContent = "PLAY AGAIN"
-    gameOverContainer.appendChild(spanTitle)
-    gameOverContainer.appendChild(spanScore)
-    gameOverContainer.appendChild(spanHighScore)
-    gameOverContainer.appendChild(playAgainButton)
-    subContainer.appendChild(gameOverContainer)
-  }
-
-  function displayStartPage() {
-    const startGameContainer = document.createElement("div")
-    const spanTitle = document.createElement("span")
-    const playButton = document.createElement("button")
-    playButton.id = "playButton"
-    startGameContainer.id = "startGameContainer"
-    spanTitle.textContent = "TETRIS"
-    playButton.textContent = "PLAY"
-    startGameContainer.appendChild(spanTitle)
-    startGameContainer.appendChild(playButton)
-    subContainer.appendChild(startGameContainer)
-  }
-
-  function displayPausePage() {
-    const pauseGameContainer = document.createElement("div")
-    const spanTitle = document.createElement("span")
-    const resumeButton = document.createElement("resumeButton")
-    pauseGameContainer.id = "pauseGameContainer"
-    resumeButton.id = "resumeButton"
-    spanTitle.textContent = "PAUSED"
-    resumeButton.textContent = "resume"
-    pauseGameContainer.appendChild(spanTitle)
-    pauseGameContainer.appendChild(resumeButton)
-    subContainer.appendChild(pauseGameContainer)
+    components.displayStartPage()
+    //components.displayHelpBox()
   }
 
   //LOCAL STORAGE STUFF:
@@ -395,11 +360,6 @@ Module.onRuntimeInitialized = async function () {
         localStorage.setItem("highScore", highScore)
       }
     }
-  }
-
-  //Utility functions
-  function randomIntFromRange(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   function drawLine(sx, sy, ex, ey) {
