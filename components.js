@@ -1,5 +1,5 @@
 export const components = (() => {
-  function displayGameOverPage() {
+  function displayGameOverPage(game) {
     const gameOverContainer = document.createElement("div")
     const spanTitle = document.createElement("span")
     const spanScore = document.createElement("span")
@@ -50,7 +50,6 @@ export const components = (() => {
 
   function displayHelpBox() {
     const helpBox = document.createElement("div")
-    const boxTitle = document.createElement("span")
     helpBox.id = "helpBox"
 
     let contentArr = ["Controls:", "Pause/Play: 'Esc'", "Move: Arrow Keys", "Rotate: 'z'"]

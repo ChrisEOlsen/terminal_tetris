@@ -11,7 +11,7 @@ Module.onRuntimeInitialized = async function () {
   var cn = nextPieceCanvas.getContext("2d")
   var cs = scoreBoard.getContext("2d")
 
-  let blockSize = 32 //px
+  let blockSize = 30 //px
   const nFieldWidth = 12
   const nFieldHeight = 23
   const offsetX = 2
@@ -60,7 +60,7 @@ Module.onRuntimeInitialized = async function () {
           c.fillStyle = "black"
           c.fillRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else {
-          c.strokeStyle = "aquamarine" //tetrominoColors[value]
+          c.strokeStyle = "aquamarine"
           c.lineWidth = 2
           // Draw border
           c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
@@ -333,7 +333,7 @@ Module.onRuntimeInitialized = async function () {
       requestAnimationFrame(gameLoop) // repeat next frame
     } else {
       saveHighScore()
-      components.displayGameOverPage()
+      components.displayGameOverPage(game)
     }
   }
   initEvents()

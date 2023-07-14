@@ -144,62 +144,40 @@ public:
         srand(time(NULL));
         createGameBoard();
     }
-
 bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 {
     for (int px = 0; px < 4; px++)
         for(int py = 0; py < 4; py++)
         {
-            //Get index into piece
-            int pi = Rotate(px,py,nRotation);
+            // Get index into piece
+            int pi = Rotate(px, py, nRotation);
 
-            //Get index into field
-            int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
-
-            // Check that test is bounds, Note out of bounds does
-            // not necessarily mean fail
-
-            if (nPosX + px >= 0 && nPosX + px < nFieldWidth)
-            {
-                if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
-                {
-                    // Get tetromino piece
-                    vector<int> tetromino = tetrominos[nTetromino]; 
-
-                    // In Bounds so do collision check
-                    if (tetromino[pi] != 0 && gameBoard[fi] != 10)
-                        return false; // fail on first hit
-                }
-            }
-        }
-    return true; // No fail condition has been met
-}
-//Needed due to tetromino being spawned in -y axis 
-bool isInBoundsX(int nTetromino, int nRotation, int nPosX)
-{
-    for (int px = 0; px < 4; px++)
-        for(int py = 0; py < 4; py++)
-        {
-            //Get index into piece
-            int pi = Rotate(px,py,nRotation);
-
-            //Get tetromino piece
+            // Get tetromino piece
             vector<int> tetromino = tetrominos[nTetromino]; 
 
-            // if it's part of the tetromino
+            // If it's part of the tetromino
             if (tetromino[pi] != 0)
             {
-                // if it's outside the game board on the left or right
+                // If it's outside the game board on the left or right
                 if (nPosX + px <= 0 || nPosX + px >= nFieldWidth - 1)
                 {
-                    return false; // out of bounds
+                    return false; // Out of bounds
+                }
+                
+                // In bounds, so continue with collision checks if the position is within the game board
+                if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
+                {
+                    // Get index into field
+                    int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
+
+                    // In bounds, so do collision check
+                    if (gameBoard[fi] != 10)
+                        return false; // Fail on first hit
                 }
             }
         }
     return true; // No fail condition has been met
 }
-
-
 
     void update() {
 
@@ -313,11 +291,11 @@ bool isInBoundsX(int nTetromino, int nRotation, int nPosX)
 void moveTetromino(int val){
     if(bGamePaused || bGameOver) return;
     if(val == 0){
-        if(isInBoundsX(nCurrentPiece, nCurrentRotation, nCurrentX - 1) && checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
+        if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
             nCurrentX--;
         }
     }else if(val == 1){
-        if(isInBoundsX(nCurrentPiece, nCurrentRotation, nCurrentX + 1) && checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)){
+        if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)){
             nCurrentX++;
         }
     }else if(val == 2){
