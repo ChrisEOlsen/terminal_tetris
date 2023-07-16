@@ -74,16 +74,18 @@ Module.onRuntimeInitialized = async function () {
           c.lineWidth = 1
           //c.shadowBlur = 10
           //c.shadowColor = "aquamarine"
-          c.beginPath()
-          c.moveTo(x * blockSize + offsetX, y * blockSize + offsetY)
-          c.lineTo((x + 1) * blockSize + offsetX, (y + 1) * blockSize + offsetY)
-          c.stroke()
-          c.closePath()
-          c.beginPath()
-          c.moveTo(x * blockSize + blockSize + offsetX, y * blockSize + offsetY) // Top right corner
-          c.lineTo(x * blockSize + offsetX, y * blockSize + blockSize + offsetY) // Bottom left corner
-          c.stroke()
-          c.closePath()
+          drawLine(
+            x * blockSize + offsetX,
+            y * blockSize + offsetY,
+            (x + 1) * blockSize + offsetX,
+            (y + 1) * blockSize + offsetY
+          )
+          drawLine(
+            x * blockSize + blockSize + offsetX,
+            y * blockSize + offsetY,
+            x * blockSize + offsetX,
+            y * blockSize + blockSize + offsetY
+          )
         }
 
         //kill shadows

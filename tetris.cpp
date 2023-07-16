@@ -16,7 +16,6 @@ using namespace std;
 //270 deg: i = 3 + y(x * 4)
 
 //Define tetrominos:
-// Define your Tetrominos in a flattened form (example shown for I, T, O, and L)
 vector<int> iTetromino = {
     0, 0, 1, 0,
     0, 0, 1, 0,
