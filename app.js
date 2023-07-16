@@ -2,14 +2,19 @@ import { utils } from "./utils.js"
 import { components } from "./components.js"
 
 Module.onRuntimeInitialized = async function () {
+  //Main containers
   const projectContainer = document.getElementById("projectContainer")
   const subContainer = document.getElementById("subContainer")
   const canvas = document.getElementById("game-canvas")
   const nextPieceCanvas = document.getElementById("nextPiece")
   const scoreBoard = document.getElementById("scoreBoard")
+  //Canvas contexts
   var c = canvas.getContext("2d")
   var cn = nextPieceCanvas.getContext("2d")
   var cs = scoreBoard.getContext("2d")
+  //Music
+  const tetrisMusic = document.getElementById("startMusic")
+  const gameOverMusic = document.getElementById("endMusic")
 
   let blockSize = 30 //px
   const nFieldWidth = 12
@@ -52,11 +57,8 @@ Module.onRuntimeInitialized = async function () {
         if (value === 10) {
           //Empty space
           c.fillStyle = "black"
-          c.strokeStyle = "white"
-          c.lineWidth = 0.15
-          // Draw border
-          c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else if (value === 9) {
+          c.strokeStyle = "black"
           c.fillStyle = "black"
           c.fillRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else {
@@ -258,7 +260,7 @@ Module.onRuntimeInitialized = async function () {
   //Handle User Input and events
   const initEvents = () => {
     document.addEventListener("keypress", function (event) {
-      if (event.key === "z") {
+      if (event.code === "KeyZ") {
         game.rotateTetromino(-1)
       }
     })
@@ -284,9 +286,11 @@ Module.onRuntimeInitialized = async function () {
           if (document.getElementById("startGameContainer") || document.getElementById("gameOverContainer")) return
           if (!document.getElementById("pauseGameContainer")) {
             game.pauseGame()
+            tetrisMusic.pause()
             components.displayPausePage()
           } else if (document.getElementById("pauseGameContainer")) {
             game.resumeGame()
+            tetrisMusic.play()
             document.getElementById("pauseGameContainer").remove()
           }
           break
@@ -298,16 +302,30 @@ Module.onRuntimeInitialized = async function () {
         game.resumeGame() //Stop user input until game starts
         gameLoop()
         document.getElementById("startGameContainer").remove()
+        document.getElementById("helpBox").remove()
+        //Play game audio:
+        tetrisMusic.play()
       }
       if (e.target.id == "playAgainButton") {
         game.restartGame()
         nDropInterval = startSpeed
         gameLoop()
         document.getElementById("gameOverContainer").remove()
+        tetrisMusic.currentTime = 0
+        tetrisMusic.play()
       }
       if (e.target.id == "resumeButton") {
         game.resumeGame()
         document.getElementById("pauseGameContainer").remove()
+        tetrisMusic.play()
+      }
+    })
+
+    const muteButton = document.getElementById("muteButton")
+    muteButton.addEventListener("click", e => {
+      if (e.target.id === "muteButton" || e.target.classList.contains("muteClickable")) {
+        components.toggleMuteButton()
+        muteButton.blur()
       }
     })
   }
@@ -333,6 +351,8 @@ Module.onRuntimeInitialized = async function () {
       requestAnimationFrame(gameLoop) // repeat next frame
     } else {
       saveHighScore()
+      tetrisMusic.pause()
+      gameOverMusic.play()
       components.displayGameOverPage(game)
     }
   }
@@ -343,7 +363,7 @@ Module.onRuntimeInitialized = async function () {
   //COMPONENTS BELOW:
   function displayStartComponents() {
     components.displayStartPage()
-    //components.displayHelpBox()
+    components.displayHelpBox()
   }
 
   //LOCAL STORAGE STUFF:
@@ -362,6 +382,7 @@ Module.onRuntimeInitialized = async function () {
     }
   }
 
+  //Util function
   function drawLine(sx, sy, ex, ey) {
     c.beginPath()
     c.moveTo(sx, sy)
