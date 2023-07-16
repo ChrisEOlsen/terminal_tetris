@@ -4,7 +4,6 @@ import { components } from "./components.js"
 Module.onRuntimeInitialized = async function () {
   //Main containers
   const projectContainer = document.getElementById("projectContainer")
-  const subContainer = document.getElementById("subContainer")
   const canvas = document.getElementById("game-canvas")
   const nextPieceCanvas = document.getElementById("nextPiece")
   const scoreBoard = document.getElementById("scoreBoard")
@@ -58,13 +57,14 @@ Module.onRuntimeInitialized = async function () {
           //Empty space
           c.fillStyle = "black"
         } else if (value === 9) {
+          //Border cells
           c.strokeStyle = "black"
           c.fillStyle = "black"
           c.fillRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         } else {
-          c.strokeStyle = "aquamarine"
+          //Dropped tetrominos
+          game.getGameOver() ? (c.strokeStyle = "aquamarine") : (c.strokeStyle = "white")
           c.lineWidth = 2
-          // Draw border
           c.strokeRect(x * blockSize + offsetX, y * blockSize + offsetY, blockSize, blockSize)
         }
 
