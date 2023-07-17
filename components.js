@@ -5,20 +5,24 @@ export const components = (() => {
     const spanScore = document.createElement("span")
     const spanHighScore = document.createElement("span")
     const playAgainButton = document.createElement("button")
+    const quitButton = document.createElement("button")
     gameOverContainer.id = "gameOverContainer"
     playAgainButton.id = "playAgainButton"
+    quitButton.id = "quitButton"
     spanTitle.textContent = "Game Over!"
     spanScore.textContent = `Score: ${game.getScore().toString()}`
     if (localStorage.getItem("highScore") !== null) {
-      spanHighScore.textContent = `High score: ${localStorage.getItem("highScore")}`
+      spanHighScore.textContent = `High Score: ${localStorage.getItem("highScore")}`
     } else {
-      spanHighScore.textContent = `High score: ${game.getScore().toString()}`
+      spanHighScore.textContent = `High Score: ${game.getScore().toString()}`
     }
     playAgainButton.textContent = "PLAY AGAIN"
+    quitButton.textContent = "QUIT"
     gameOverContainer.appendChild(spanTitle)
     gameOverContainer.appendChild(spanScore)
     gameOverContainer.appendChild(spanHighScore)
     gameOverContainer.appendChild(playAgainButton)
+    gameOverContainer.appendChild(quitButton)
     subContainer.appendChild(gameOverContainer)
   }
 
@@ -54,6 +58,7 @@ export const components = (() => {
 
     let contentArr = ["Move:", "Rotate:", "Quick Drop:", "Pause/Play:"]
     let keys = ["Arrows", "'z'", "'Space'", "'Esc'"]
+
     for (let i = 0; i < contentArr.length; i++) {
       const innerContainer = document.createElement("div")
       const span = document.createElement("span")

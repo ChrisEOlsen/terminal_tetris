@@ -217,10 +217,10 @@ Module.onRuntimeInitialized = async function () {
         //Draw scoreBoard in seperate canvas (cs)
         cs.font = '22px "Press Start 2P"'
         cs.fillStyle = "aquamarine"
-        cs.fillText(`TOP`, 20, scoreBoard.height / 2 - 40)
-        cs.fillText(`${localStorage.getItem("highScore")}`, 20, scoreBoard.height / 2 - 14)
-        cs.fillText(`SCORE`, 20, scoreBoard.height / 2 + 20)
-        cs.fillText(`${game.getScore()}`, 20, scoreBoard.height / 2 + 46)
+        cs.fillText(`TOP`, 16, scoreBoard.height / 2 - 40)
+        cs.fillText(`${localStorage.getItem("highScore")}`, 16, scoreBoard.height / 2 - 14)
+        cs.fillText(`SCORE`, 16, scoreBoard.height / 2 + 20)
+        cs.fillText(`${game.getScore()}`, 16, scoreBoard.height / 2 + 46)
       }
 
     //Draw Border Lines
@@ -306,6 +306,7 @@ Module.onRuntimeInitialized = async function () {
         document.getElementById("startGameContainer").remove()
         document.getElementById("helpBox").remove()
         //Play game audio:
+        tetrisMusic.currentTime = 0
         tetrisMusic.play()
       }
       if (e.target.id == "playAgainButton") {
@@ -315,6 +316,15 @@ Module.onRuntimeInitialized = async function () {
         document.getElementById("gameOverContainer").remove()
         tetrisMusic.currentTime = 0
         tetrisMusic.play()
+      }
+      if (e.target.id === "quitButton") {
+        document.getElementById("gameOverContainer").remove()
+        components.displayStartPage()
+        components.displayHelpBox()
+        game.restartGame()
+        nDropInterval = startSpeed
+        game.pauseGame()
+        draw()
       }
       if (e.target.id == "resumeButton") {
         game.resumeGame()

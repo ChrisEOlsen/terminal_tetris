@@ -129,7 +129,8 @@ body {
 
 #playButton,
 #playAgainButton,
-#resumeButton {
+#resumeButton,
+#quitButton {
   color: white;
   background-color: black;
   border: 2px solid aquamarine;
@@ -143,7 +144,8 @@ body {
 }
 #playButton:hover,
 #playAgainButton:hover,
-#resumeButton:hover {
+#resumeButton:hover,
+#quitButton:hover {
   cursor: pointer;
   background-color: aquamarine;
   color: black;
