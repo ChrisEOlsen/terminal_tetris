@@ -30,15 +30,15 @@ Module.onRuntimeInitialized = async function () {
   scoreBoard.height = blockSize * 8
 
   let game = new Module.Game(
-    false,
-    true,
-    utils.randomIntFromRange(0, 6),
-    utils.randomIntFromRange(1, 6),
-    0,
-    4,
-    -4,
-    0,
-    0
+    false, //gameOver
+    true, //gamePaused
+    utils.randomIntFromRange(0, 6), //Next piece
+    utils.randomIntFromRange(1, 6), //Current piece
+    0, //Current Rotation
+    4, //Current X
+    -4, //Current Y
+    0, //Count of pieces dropped
+    0 //Initial score
   )
 
   const draw = () => {
