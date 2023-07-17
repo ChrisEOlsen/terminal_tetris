@@ -21,6 +21,8 @@ Module.onRuntimeInitialized = async function () {
   const offsetX = 2
   const offsetY = 2
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#e11d48", "#d946ef", "#f8fafc"]
+  let HIGH_SCORE = localStorage.getItem("highScore")
+  if (HIGH_SCORE === null) HIGH_SCORE = "0"
 
   canvas.width = blockSize * nFieldWidth + offsetX * 2
   canvas.height = blockSize * nFieldHeight + offsetY * 2
@@ -215,12 +217,10 @@ Module.onRuntimeInitialized = async function () {
         cn.shadowColor = "black"
 
         //Draw scoreBoard in seperate canvas (cs)
-        let highScore = localStorage.getItem("highScore")
-        if (highScore === null) highScore = "0"
         cs.font = '22px "Press Start 2P"'
         cs.fillStyle = "aquamarine"
         cs.fillText(`TOP`, 16, scoreBoard.height / 2 - 40)
-        cs.fillText(`${highScore}`, 16, scoreBoard.height / 2 - 14)
+        cs.fillText(`${HIGH_SCORE}`, 16, scoreBoard.height / 2 - 14)
         cs.fillText(`SCORE`, 16, scoreBoard.height / 2 + 20)
         cs.fillText(`${game.getScore()}`, 16, scoreBoard.height / 2 + 46)
       }
@@ -386,17 +386,9 @@ Module.onRuntimeInitialized = async function () {
 
   //LOCAL STORAGE STUFF:
   function saveHighScore() {
-    let highScore = parseInt(localStorage.getItem("highScore"))
-    if (isNaN(highScore)) {
-      // High score doesn't exist yet, initialize it
-      highScore = game.getScore()
-      localStorage.setItem("highScore", highScore)
-    } else {
-      // High score exists
-      if (game.getScore() > highScore) {
-        highScore = game.getScore()
-        localStorage.setItem("highScore", highScore)
-      }
+    if (game.getScore() > HIGH_SCORE) {
+      HIGH_SCORE = game.getScore()
+      localStorage.setItem("highScore", HIGH_SCORE)
     }
   }
 
