@@ -306,8 +306,12 @@ Module.onRuntimeInitialized = async function () {
         document.getElementById("startGameContainer").remove()
         document.getElementById("helpBox").remove()
         //Play game audio:
+        tetrisMusic.oncanplaythrough = function () {
+          tetrisMusic.play().catch(function (error) {
+            console.error("Failed to play audio:", error)
+          })
+        }
         tetrisMusic.currentTime = 0
-        tetrisMusic.play()
       }
       if (e.target.id == "playAgainButton") {
         game.restartGame()
