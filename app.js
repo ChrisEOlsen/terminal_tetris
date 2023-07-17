@@ -215,10 +215,12 @@ Module.onRuntimeInitialized = async function () {
         cn.shadowColor = "black"
 
         //Draw scoreBoard in seperate canvas (cs)
+        let highScore = localStorage.getItem("highScore")
+        if (highScore === null) highScore = "0"
         cs.font = '22px "Press Start 2P"'
         cs.fillStyle = "aquamarine"
         cs.fillText(`TOP`, 16, scoreBoard.height / 2 - 40)
-        cs.fillText(`${localStorage.getItem("highScore")}`, 16, scoreBoard.height / 2 - 14)
+        cs.fillText(`${highScore}`, 16, scoreBoard.height / 2 - 14)
         cs.fillText(`SCORE`, 16, scoreBoard.height / 2 + 20)
         cs.fillText(`${game.getScore()}`, 16, scoreBoard.height / 2 + 46)
       }
