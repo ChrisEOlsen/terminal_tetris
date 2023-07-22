@@ -81,7 +81,7 @@ int Rotate(int px, int py, int r)
 	int pi = 0;
 	switch (r % 4)
 	{
-	case 0: // 0 degrees			// 0  1  2  3
+	case 0: // 0 degrees			// 0  1  2  4
 		pi = py * 4 + px;			// 4  5  6  7
 		break;						// 8  9 10 11
 									//12 13 14 15

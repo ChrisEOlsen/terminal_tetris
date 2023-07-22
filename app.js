@@ -20,7 +20,9 @@ Module.onRuntimeInitialized = async function () {
   const nFieldHeight = 23
   const offsetX = 2
   const offsetY = 2
+  //colors
   const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#e11d48", "#d946ef", "#f8fafc"]
+
   let HIGH_SCORE = localStorage.getItem("highScore")
   if (HIGH_SCORE === null) HIGH_SCORE = "0"
 
