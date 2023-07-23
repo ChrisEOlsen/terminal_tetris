@@ -1,3 +1,7 @@
+// This file is hard to read and parse.
+// would be great to break it down to multiple short files, each doing pone specific thing.,
+// like draw board, define game loop, manage the events, etc.
+
 import { utils } from "./utils.js"
 import { components } from "./components.js"
 
@@ -33,9 +37,12 @@ Module.onRuntimeInitialized = async function () {
   scoreBoard.width = blockSize * 5
   scoreBoard.height = blockSize * 8
 
+  // See comment oin cpp file. IMO this should be let game = new Module.Game()
   let game = new Module.Game(
     false, //gameOver
     true, //gamePaused
+      // Why send these as parameters of the constructor? The constructor can just draw random pieces for itself
+      // just like it is drawing pieces during the game
     utils.randomIntFromRange(0, 6), //Next piece
     utils.randomIntFromRange(1, 6), //Current piece
     0, //Current Rotation
@@ -44,6 +51,9 @@ Module.onRuntimeInitialized = async function () {
     0, //Count of pieces dropped
     0 //Initial score
   )
+
+  // would be good to put this draw function in a separate file and have it get game as parameters
+  // also separate that function into different functions, one for each component.
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -57,6 +67,7 @@ Module.onRuntimeInitialized = async function () {
         const index = y * nFieldWidth + x
         const value = gameBoard.get(index)
 
+        // I'm sure JS has enums as well... use them here and not just meaningless numbers.
         if (value === 10) {
           //Empty space
           c.fillStyle = "black"
@@ -123,6 +134,9 @@ Module.onRuntimeInitialized = async function () {
             blockSize,
             blockSize
           )
+
+          // I think this should be part of the cpp code. The shadow cacluation can reside with the game logic.
+          // only drawing it should be done here.
 
           //Find shadowY limit, then draw.
           if (!game.getGamePaused() && !game.getGameOver()) {
@@ -264,8 +278,10 @@ Module.onRuntimeInitialized = async function () {
   }
 
   //Handle User Input and events
+  // you can move this to a different function ina a library
   const initEvents = () => {
     document.addEventListener("keypress", function (event) {
+      // I would handle the pause/start logic here and not in the cpp code
       if (event.code === "KeyZ") {
         game.rotateTetromino(-1)
       }
@@ -303,6 +319,7 @@ Module.onRuntimeInitialized = async function () {
       }
     })
 
+    // Not sure why you need 2 event handlers... I must be missing some JS context
     projectContainer.addEventListener("click", e => {
       if (e.target.id == "playButton") {
         game.resumeGame() //Stop user input until game starts
@@ -362,6 +379,9 @@ Module.onRuntimeInitialized = async function () {
     if (delta >= nDropInterval && !game.getGamePaused()) {
       game.update() // update game state
       lastTick = now // update the last tick time
+
+      // This should also be part of the game logic. The JS side should just get the interval from the game object and
+      // it should be updated there.
       if (game.getPieceCount() % 2 == 0 && nDropInterval > 150) nDropInterval -= 10 //Change gamespeed
     }
 

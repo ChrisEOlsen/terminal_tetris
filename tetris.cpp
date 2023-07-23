@@ -6,6 +6,9 @@
 
 using namespace std;
 
+// This file could be broken into sevral files to make it more modular and readable. A resources file, functions files,
+// game class files, and EMSCRIPT binding file
+
 //Compile command: 
 //emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -O3 -o tetris.js tetris.cpp
 
@@ -110,6 +113,7 @@ int Rotate(int px, int py, int r)
 int nFieldWidth = 12;
 int nFieldHeight = 23;
 
+// Would be good to put the class declaration in a header file and separate definition from implementation
 class Game {
 private:
     vector<int> gameBoard;
@@ -134,17 +138,29 @@ private:
    
 
 public:
+    // is it really needed to have all of these as parameters?
+    // would you ever start a tetris game from a different state?
+    // This is the kind of complexity that sometimes is recommended for "industry" but IMO actually does not help to make
+    // the code better. It is not more readable, does not increase separation of concerns, it is just more code.
+    // Introduce more features when you need them, not a-priori
     Game(bool bGameOver, bool bGamePaused, int nNextPiece, int nCurrentPiece, int nCurrentRotation, 
          int nCurrentX, int nCurrentY, int nPieceCount, int nScore) 
         : bGameOver(bGameOver), bGamePaused(bGamePaused), nNextPiece(nNextPiece),nCurrentPiece(nCurrentPiece),
           nCurrentRotation(nCurrentRotation), nCurrentX(nCurrentX), nCurrentY(nCurrentY), nPieceCount(nPieceCount),
           nScore(nScore)
     {
+        //This is OK for a game but the system random number generator should not be used for any serious use.
+        //There are good random number generators in the new standard library:
+        // https://en.cppreference.com/w/cpp/header/random
         srand(time(NULL));
         createGameBoard();
     }
+// nit: indent. Use a formatter
 bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
-{
+    // why is checkCollision public? Are you calling it from JS? If your game logic is all in c++ then all the
+    // collision checking should be done from update, move, rotate etc.
+
+    {
     for (int px = 0; px < 4; px++)
         for(int py = 0; py < 4; py++)
         {
@@ -179,11 +195,18 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 }
 
     void update() {
-
         if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
             nCurrentY += 1;
         }else{
-    
+            // Here every "paragraph" can be its own function so that this will read something like:
+            //
+            // stick_to_game_board();
+            // int cleared_lines = clear_full_lines();
+            // update_score(cleared_lines);
+            // start_next_piece();
+
+
+
             //the tetromino has reached its end point -> Stick it to gameBoard
             for(int px = 0; px < 4; px++)
                 for(int py = 0; py < 4; py++){
@@ -288,7 +311,10 @@ bool checkCollision(int nTetromino, int nRotation, int nPosX, int nPosY)
 
     //Input functions
 void moveTetromino(int val){
+        // The line below might belong outside this logic. it might be more elegant if the JS code will determine is the
+        // game is running or not before sending the move command
     if(bGamePaused || bGameOver) return;
+    // instead of raw integers you can use enums that will give these numbers meaning (LEFT, RIGHT, DOWN, etc.)
     if(val == 0){
         if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
             nCurrentX--;
@@ -354,6 +380,8 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .constructor<bool, bool, int, int, int, int, int, int, int>()
         .function("checkCollision", &Game::checkCollision)
         .function("update", &Game::update)
+        // Maybe you can use properties instead of functions for all the simple getters so you would not need the getter
+        // functions that really don't contribute anything to the code.
         .function("getGameBoard", &Game::getGameBoard)
         .function("getGameOver", &Game::getGameOver)
         .function("getNextPiece", &Game::getNextPiece)
