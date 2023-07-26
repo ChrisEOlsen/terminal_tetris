@@ -88,11 +88,18 @@ export const components = (() => {
     }
   }
 
+  //COMPONENTS BELOW:
+  function displayStartComponents() {
+    displayStartPage()
+    displayHelpBox()
+  }
+
   return {
     displayGameOverPage,
     displayPausePage,
     displayStartPage,
     displayHelpBox,
     toggleMuteButton,
+    displayStartComponents,
   }
 })()

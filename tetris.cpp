@@ -15,101 +15,6 @@ using namespace std;
 //180 deg: i = 15 - (y * 4) - x
 //270 deg: i = 3 + y(x * 4)
 
-//Define tetrominos:
-vector<int> iTetromino = {
-    0, 0, 1, 0,
-    0, 0, 1, 0,
-    0, 0, 1, 0,
-    0, 0, 1, 0
-};
-vector<int> tTetromino = {
-    0, 0, 0, 0,
-    0, 1, 0, 0,
-    1, 1, 1, 0,
-    0, 0, 0, 0
-};
-vector<int> oTetromino = {
-    0, 0, 0, 0,
-    0, 1, 1, 0,
-    0, 1, 1, 0,
-    0, 0, 0, 0
-};
-vector<int> lTetromino = {
-    0, 0, 1, 0,
-    0, 0, 1, 0,
-    0, 1, 1, 0,
-    0, 0, 0, 0
-};
-vector<int> rlTetromino = {
-    0, 1, 0, 0,
-    0, 1, 0, 0,
-    0, 1, 1, 0,
-    0, 0, 0, 0
-};
-vector<int> zTetromino = {
-    0, 1, 0, 0,
-    0, 1, 1, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 0
-};
-vector<int> rzTetromino = {
-    0, 0, 1, 0,
-    0, 1, 1, 0,
-    0, 1, 0, 0,
-    0, 0, 0, 0
-};
-
-// Create a vector of Tetrominos
-vector<vector<int>> tetrominos = {
-    iTetromino,
-    tTetromino,
-    oTetromino,
-    lTetromino,
-    rlTetromino,
-    zTetromino,
-    rzTetromino
-};
-
-vector<int> getTetromino(int nCurrentPiece) {
-    return tetrominos[nCurrentPiece];
-}
-
-
-//Rotation function
-int Rotate(int px, int py, int r)
-{
-	int pi = 0;
-	switch (r % 4)
-	{
-	case 0: // 0 degrees			
-		pi = py * 4 + px;			
-		break;						
-									
-
-	case 1: // 90 degrees			
-		pi = 12 + py - (px * 4);	
-		break;						
-									
-
-	case 2: // 180 degrees			
-		pi = 15 - (py * 4) - px;	
-		break;						
-									
-
-	case 3: // 270 degrees			
-		pi = 3 - py + (px * 4);		
-		break;						
-	}								
-
-	return pi;
-}
-
-
-
-
-int nFieldWidth = 12;
-int nFieldHeight = 23;
-
 class Game {
 private:
     vector<int> gameBoard;
@@ -125,7 +30,10 @@ private:
     int nScore;
     int nStartSpeed;
     int nDropInterval;
-    vector<int> vLines;
+
+    int nFieldWidth = 12;
+    int nFieldHeight = 23;
+
 
     void createGameBoard() {
         gameBoard = vector<int>(nFieldWidth*nFieldHeight);
@@ -260,6 +168,94 @@ public:
         createGameBoard();
     }
 
+        //Define tetrominos:
+    vector<int> iTetromino = {
+        0, 0, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 1, 0
+    };
+    vector<int> tTetromino = {
+        0, 0, 0, 0,
+        0, 1, 0, 0,
+        1, 1, 1, 0,
+        0, 0, 0, 0
+    };
+    vector<int> oTetromino = {
+        0, 0, 0, 0,
+        0, 1, 1, 0,
+        0, 1, 1, 0,
+        0, 0, 0, 0
+    };
+    vector<int> lTetromino = {
+        0, 0, 1, 0,
+        0, 0, 1, 0,
+        0, 1, 1, 0,
+        0, 0, 0, 0
+    };
+    vector<int> rlTetromino = {
+        0, 1, 0, 0,
+        0, 1, 0, 0,
+        0, 1, 1, 0,
+        0, 0, 0, 0
+    };
+    vector<int> zTetromino = {
+        0, 1, 0, 0,
+        0, 1, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 0
+    };
+    vector<int> rzTetromino = {
+        0, 0, 1, 0,
+        0, 1, 1, 0,
+        0, 1, 0, 0,
+        0, 0, 0, 0
+    };
+
+    // Create a vector of Tetrominos
+    vector<vector<int>> tetrominos = {
+        iTetromino,
+        tTetromino,
+        oTetromino,
+        lTetromino,
+        rlTetromino,
+        zTetromino,
+        rzTetromino
+    };
+
+    vector<int> getTetromino(int nCurrentPiece) {
+        return tetrominos[nCurrentPiece];
+    }
+
+        //Rotation function
+    int Rotate(int px, int py, int r)
+    {
+        int pi = 0;
+        switch (r % 4)
+        {
+        case 0: // 0 degrees			
+            pi = py * 4 + px;			
+            break;						
+                                        
+
+        case 1: // 90 degrees			
+            pi = 12 + py - (px * 4);	
+            break;						
+                                        
+
+        case 2: // 180 degrees			
+            pi = 15 - (py * 4) - px;	
+            break;						
+                                        
+
+        case 3: // 270 degrees			
+            pi = 3 - py + (px * 4);		
+            break;						
+        }								
+
+        return pi;
+    }
+
     //Called on every game tick
     void update() {
         if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
@@ -274,7 +270,6 @@ public:
             // If piece does not fit straight away, game over!
             bGameOver = !checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1);
         }
-        
     }
 
     //Calculates Y coordinate for tetromino shadow -> Called in app.js draw()
@@ -321,6 +316,8 @@ public:
             nCurrentRotation = nextRotation;
         }
     }
+
+    
 
     void restartGame(){
         //Reset values for new game
@@ -380,10 +377,10 @@ public:
 EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::register_vector<int>("VectorInt");
     emscripten::register_vector<vector<int>>("VectorVectorInt");
-    emscripten::function("Rotate", &Rotate);
-    emscripten::function("getTetromino", &getTetromino);
     emscripten::class_<Game>("Game")
         .constructor()
+        .function("Rotate", &Game::Rotate)
+        .function("getTetromino", &Game::getTetromino)
         .function("update", &Game::update)
         .function("getGameBoard", &Game::getGameBoard)
         .function("getGameOver", &Game::getGameOver)
