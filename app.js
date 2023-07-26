@@ -1,7 +1,6 @@
-import { utils } from "./utils.js"
 import { components } from "./components.js"
 
-Module.onRuntimeInitialized = async function () {
+Module.onRuntimeInitialized = function () {
   //Main containers
   const projectContainer = document.getElementById("projectContainer")
   const canvas = document.getElementById("game-canvas")
@@ -33,17 +32,13 @@ Module.onRuntimeInitialized = async function () {
   scoreBoard.width = blockSize * 5
   scoreBoard.height = blockSize * 8
 
-  let game = new Module.Game(
-    false, //gameOver
-    true, //gamePaused
-    utils.randomIntFromRange(0, 6), //Next piece
-    utils.randomIntFromRange(1, 6), //Current piece
-    0, //Current Rotation
-    4, //Current X
-    -4, //Current Y
-    0, //Count of pieces dropped
-    0 //Initial score
-  )
+  let game = new Module.Game()
+
+  const Cell = {
+    EMPTY: 10,
+    BORDER: 9,
+    TETROMINO: 8,
+  }
 
   const draw = () => {
     let gameBoard = game.getGameBoard()
@@ -57,10 +52,10 @@ Module.onRuntimeInitialized = async function () {
         const index = y * nFieldWidth + x
         const value = gameBoard.get(index)
 
-        if (value === 10) {
+        if (value === Cell.EMPTY) {
           //Empty space
           c.fillStyle = "black"
-        } else if (value === 9) {
+        } else if (value === Cell.BORDER) {
           //Border cells
           c.strokeStyle = "black"
           c.fillStyle = "black"
@@ -73,7 +68,7 @@ Module.onRuntimeInitialized = async function () {
         }
 
         // Draw diagonals
-        if (value !== 10 && value !== 9) {
+        if (value !== Cell.EMPTY && value !== Cell.BORDER) {
           //Placed tetrominos
           c.lineWidth = 1
           //c.shadowBlur = 10
@@ -99,11 +94,11 @@ Module.onRuntimeInitialized = async function () {
     }
     let nCurrentX = game.getCurrentX()
     let nCurrentY = game.getCurrentY()
+    let nShadowY = game.changeShadowY()
     let nCurrentPiece = game.getCurrentPiece()
     let nNextPiece = game.getNextPiece()
     let nCurrentRotation = game.getCurrentRotation()
     let tetromino = Module.getTetromino(nCurrentPiece)
-    let shadowY = nCurrentY
     let nextTetromino = Module.getTetromino(nNextPiece)
 
     //Draw Tetromino
@@ -126,9 +121,6 @@ Module.onRuntimeInitialized = async function () {
 
           //Find shadowY limit, then draw.
           if (!game.getGamePaused() && !game.getGameOver()) {
-            while (game.checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, shadowY + 1)) {
-              shadowY++
-            }
             // Check neighboring cells
             const top = py > 0 ? tetromino.get(Module.Rotate(px, py - 1, nCurrentRotation)) : 0
             const right = px < 3 ? tetromino.get(Module.Rotate(px + 1, py, nCurrentRotation)) : 0
@@ -139,9 +131,9 @@ Module.onRuntimeInitialized = async function () {
             if (top === 0) {
               drawLine(
                 (nCurrentX + px) * blockSize + offsetX,
-                (shadowY + py) * blockSize + offsetY,
+                (nShadowY + py) * blockSize + offsetY,
                 (nCurrentX + px + 1) * blockSize + offsetX,
-                (shadowY + py) * blockSize + offsetY
+                (nShadowY + py) * blockSize + offsetY
               )
             }
 
@@ -149,9 +141,9 @@ Module.onRuntimeInitialized = async function () {
             if (right === 0) {
               drawLine(
                 (nCurrentX + px + 1) * blockSize + offsetX,
-                (shadowY + py) * blockSize + offsetY,
+                (nShadowY + py) * blockSize + offsetY,
                 (nCurrentX + px + 1) * blockSize + offsetX,
-                (shadowY + py + 1) * blockSize + offsetY
+                (nShadowY + py + 1) * blockSize + offsetY
               )
             }
 
@@ -159,9 +151,9 @@ Module.onRuntimeInitialized = async function () {
             if (bottom === 0) {
               drawLine(
                 (nCurrentX + px + 1) * blockSize + offsetX,
-                (shadowY + py + 1) * blockSize + offsetY,
+                (nShadowY + py + 1) * blockSize + offsetY,
                 (nCurrentX + px) * blockSize + offsetX,
-                (shadowY + py + 1) * blockSize + offsetY
+                (nShadowY + py + 1) * blockSize + offsetY
               )
             }
 
@@ -169,16 +161,16 @@ Module.onRuntimeInitialized = async function () {
             if (left === 0) {
               drawLine(
                 (nCurrentX + px) * blockSize + offsetX,
-                (shadowY + py + 1) * blockSize + offsetY,
+                (nShadowY + py + 1) * blockSize + offsetY,
                 (nCurrentX + px) * blockSize + offsetX,
-                (shadowY + py) * blockSize + offsetY
+                (nShadowY + py) * blockSize + offsetY
               )
             }
           }
           c.shadowBlur = 0
           c.shadowColor = "black"
         }
-
+        //Define offset for next tetromino display in order to center it inside the canvas
         let nextOffsetX = 0
         let nextOffsetY = 0
         if (nNextPiece === 0) {
@@ -319,18 +311,16 @@ Module.onRuntimeInitialized = async function () {
       }
       if (e.target.id == "playAgainButton") {
         game.restartGame()
-        nDropInterval = startSpeed
-        gameLoop()
         document.getElementById("gameOverContainer").remove()
         tetrisMusic.currentTime = 0
         tetrisMusic.play()
+        gameLoop()
       }
       if (e.target.id === "quitButton") {
         document.getElementById("gameOverContainer").remove()
         components.displayStartPage()
         components.displayHelpBox()
         game.restartGame()
-        nDropInterval = startSpeed
         game.pauseGame()
         draw()
       }
@@ -350,19 +340,16 @@ Module.onRuntimeInitialized = async function () {
     })
   }
 
-  let startSpeed = 900 //milliseconds
   //Game tick start variables
   let lastTick = Date.now()
-  let nDropInterval = startSpeed
 
   const gameLoop = () => {
     let now = Date.now()
     let delta = now - lastTick
 
-    if (delta >= nDropInterval && !game.getGamePaused()) {
+    if (delta >= game.getDropInterval() && !game.getGamePaused()) {
       game.update() // update game state
       lastTick = now // update the last tick time
-      if (game.getPieceCount() % 2 == 0 && nDropInterval > 150) nDropInterval -= 10 //Change gamespeed
     }
 
     draw() // render game state
