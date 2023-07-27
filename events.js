@@ -1,7 +1,7 @@
 import { components } from "./components.js"
 import { draw } from "./draw.js"
 
-export const initEvents = (game, gameLoop) => {
+export const initEvents = game => {
   //Main containers
   const projectContainer = document.getElementById("projectContainer")
 
@@ -49,7 +49,7 @@ export const initEvents = (game, gameLoop) => {
   projectContainer.addEventListener("click", e => {
     if (e.target.id == "playButton") {
       game.resumeGame() //Stop user input until game starts
-      gameLoop()
+      game.gameLoop()
       document.getElementById("startGameContainer").remove()
       document.getElementById("helpBox").remove()
       //Play game audio:
@@ -65,7 +65,7 @@ export const initEvents = (game, gameLoop) => {
       document.getElementById("gameOverContainer").remove()
       tetrisMusic.currentTime = 0
       tetrisMusic.play()
-      gameLoop()
+      game.gameLoop()
     }
     if (e.target.id === "quitButton") {
       document.getElementById("gameOverContainer").remove()
