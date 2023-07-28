@@ -1,7 +1,5 @@
 import { components } from "./components.js"
 import { draw } from "./draw.js"
-
-//IMPORT MUSIC HERE
 import { tetrisMusic } from "./app.js"
 
 export const initEvents = game => {
