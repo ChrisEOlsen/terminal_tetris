@@ -31,7 +31,9 @@ Module.onRuntimeInitialized = function () {
       gameOverMusic.play()
       components.displayGameOverPage(this)
     }
-  }.bind(game) // bind the game instance to the function context
+  }.bind(game) // bind the game instance to the function context:
+  //bind allows the gameLoop function to be called from events.js by ensuring that "this"
+  //always refers to the "game" obj
 
   initEvents(game)
   draw(game) //Draw Board just as a background before game starts
