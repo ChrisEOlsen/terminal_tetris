@@ -21,6 +21,9 @@ canvas.width = blockSize * nFieldWidth + offsetX * 2
 canvas.height = blockSize * nFieldHeight + offsetY * 2
 nextPieceCanvas.width = blockSize * 4
 nextPieceCanvas.height = blockSize * 4
+
+//Using device pixel ratio in scoreBoard canvas to minimize blurriness. This COULD be done for
+//all canvases, but may potentially effect performance.
 scoreBoard.width = 16 * 5 * dpr
 scoreBoard.height = 16 * 8 * dpr
 cs.scale(dpr, dpr)
