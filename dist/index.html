@@ -4,15 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TETRIS</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
+  <script defer src="bundle.js"></script></head>
   <body>
-    <audio id="startMusic" preload="auto" loop>
-      <source src="./assets/Tetris.mp3" type="audio/mpeg" />
-    </audio>
-    <audio id="endMusic" preload="auto">
-      <source src="./assets/18. Game Over.mp3" type="audio/mpeg" />
-    </audio>
     <div id="projectContainer">
       <div id="subContainer">
         <canvas id="game-canvas"></canvas>
@@ -37,14 +30,6 @@
         </svg>
         <span>Code</span>
       </a>
-
-      <script src="components.js" type="module"></script>
-      <script src="utils.js" type="module"></script>
-      <script src="draw.js" type="module"></script>
-      <script src="events.js" type="module"></script>
-
-      <script src="tetris.js"></script>
-      <script defer src="app.js" type="module"></script>
     </div>
   </body>
 </html>

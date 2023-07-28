@@ -1,10 +1,11 @@
 const canvas = document.getElementById("game-canvas")
 const nextPieceCanvas = document.getElementById("nextPiece")
 const scoreBoard = document.getElementById("scoreBoard")
+
 //Canvas contexts
-var c = canvas.getContext("2d")
-var cn = nextPieceCanvas.getContext("2d")
-var cs = scoreBoard.getContext("2d")
+let c = canvas.getContext("2d")
+let cn = nextPieceCanvas.getContext("2d")
+let cs = scoreBoard.getContext("2d")
 
 let blockSize = 30 //px
 const nFieldWidth = 12
@@ -14,12 +15,15 @@ const offsetY = 2
 //colors
 const tetrominoColors = ["#fbbf24", "#22c55e", "#0ea5e9", "#67e8f9", "#e11d48", "#d946ef", "#f8fafc"]
 
+let dpr = window.devicePixelRatio || 1
+
 canvas.width = blockSize * nFieldWidth + offsetX * 2
 canvas.height = blockSize * nFieldHeight + offsetY * 2
 nextPieceCanvas.width = blockSize * 4
 nextPieceCanvas.height = blockSize * 4
-scoreBoard.width = blockSize * 5
-scoreBoard.height = blockSize * 8
+scoreBoard.width = 16 * 5 * dpr
+scoreBoard.height = 16 * 8 * dpr
+cs.scale(dpr, dpr)
 
 let HIGH_SCORE = localStorage.getItem("highScore")
 if (HIGH_SCORE === null) HIGH_SCORE = "0"
@@ -45,7 +49,7 @@ export function draw(game) {
 
   drawGameField(game)
 
-  //Draw Tetromino, shadow, next tetromino and scoreBoard
+  //Draw Tetromino, shadow, next tetromino
   for (let px = 0; px < 4; px++)
     for (let py = 0; py < 4; py++) {
       let rotatedIndex = game.Rotate(px, py, nCurrentRotation)
@@ -228,12 +232,12 @@ const drawNextPiece = (px, py, nNextPiece, nextTetromino) => {
 
 const drawScoreBoard = game => {
   //Draw scoreBoard in seperate canvas (cs)
-  cs.font = '22px "Press Start 2P"'
+  cs.font = '12px "Press Start 2P"'
   cs.fillStyle = "aquamarine"
-  cs.fillText(`TOP`, 16, scoreBoard.height / 2 - 40)
-  cs.fillText(`${HIGH_SCORE}`, 16, scoreBoard.height / 2 - 14)
-  cs.fillText(`SCORE`, 16, scoreBoard.height / 2 + 20)
-  cs.fillText(`${game.getScore()}`, 16, scoreBoard.height / 2 + 46)
+  cs.fillText(`TOP`, 10, scoreBoard.height / 6)
+  cs.fillText(`${HIGH_SCORE}`, 10, scoreBoard.height / 6 + 16)
+  cs.fillText(`SCORE`, 10, scoreBoard.height / 6 + 32)
+  cs.fillText(`${game.getScore()}`, 10, scoreBoard.height / 6 + 48)
 }
 
 const drawGameFieldBorders = () => {

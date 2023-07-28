@@ -1,13 +1,22 @@
+import "./style.css"
 import { components } from "./components.js"
 import { draw } from "./draw.js"
 import { saveHighScore } from "./draw.js"
 import { initEvents } from "./events.js"
+import { Module } from "./tetris.js"
+import startMusic from "../assets/Tetris.mp3"
+import endMusic from "../assets/18. Game Over.mp3"
 
-Module.onRuntimeInitialized = function () {
-  //Music
-  const tetrisMusic = document.getElementById("startMusic")
-  const gameOverMusic = document.getElementById("endMusic")
+//Music
+export const tetrisMusic = new Audio(startMusic)
+export const gameOverMusic = new Audio(endMusic)
+tetrisMusic.preload = "auto"
+gameOverMusic.preload = "auto"
+tetrisMusic.loop = true
+tetrisMusic.volume = 0.1 // 50% volume
+gameOverMusic.volume = 0.1 // 50% volume
 
+Module.onRuntimeInitialized = async function () {
   let game = new Module.Game()
 
   //Game tick start variable

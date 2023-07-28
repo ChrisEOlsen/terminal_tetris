@@ -1,19 +1,20 @@
 import { components } from "./components.js"
 import { draw } from "./draw.js"
 
+//IMPORT MUSIC HERE
+import { tetrisMusic } from "./app.js"
+
 export const initEvents = game => {
   //Main containers
   const projectContainer = document.getElementById("projectContainer")
-
-  //Music
-  const tetrisMusic = document.getElementById("startMusic")
 
   document.addEventListener("keypress", function (event) {
     if (event.code === "KeyZ") {
       game.rotateTetromino(-1)
     }
   })
-  //Left and right
+
+  //Left, right and down
   document.addEventListener("keydown", function (event) {
     switch (event.code) {
       case "ArrowLeft":

@@ -7,7 +7,8 @@
 using namespace std;
 
 //Compile command: 
-//emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -O3 -o tetris.js tetris.cpp
+//emcc --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web -O3 -o tetris.js tetris.cpp
+
 
 //Rotation:
 //0 deg: i = y * w + x
@@ -282,33 +283,36 @@ public:
     }
 
 
+    
     //Input functions
     void moveTetromino(int val){
         if(bGamePaused || bGameOver) return;
-        if(val == 0){
+
+        if(val == 0){ 
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX - 1, nCurrentY)){
-                nCurrentX--;
+                nCurrentX--;//Left
             }
-        }else if(val == 1){
+        }else if(val == 1){ 
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX + 1, nCurrentY)){
-                nCurrentX++;
+                nCurrentX++;//Right
             }
         }else if(val == 2){
             if(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
-                nCurrentY++;
+                nCurrentY++;//Down
             }
         }else if(val == 3){
             while(checkCollision(nCurrentPiece, nCurrentRotation, nCurrentX, nCurrentY + 1)){
-                nCurrentY++;
+                nCurrentY++; //Hard Drop
             }
         }
     }
 
 
     void rotateTetromino(int val){
-    if(bGamePaused || bGameOver) return;
+        if(bGamePaused || bGameOver) return;
 
-    int nextRotation = (nCurrentRotation + val) % 4;
+        int nextRotation = (nCurrentRotation + val) % 4;
+
         if(nextRotation < 0){
             nextRotation = 3;
         }
