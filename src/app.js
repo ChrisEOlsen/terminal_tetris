@@ -13,8 +13,8 @@ export const gameOverMusic = new Audio(endMusic)
 tetrisMusic.preload = "auto"
 gameOverMusic.preload = "auto"
 tetrisMusic.loop = true
-tetrisMusic.volume = 0.1 // 50% volume
-gameOverMusic.volume = 0.1 // 50% volume
+tetrisMusic.volume = 0.1
+gameOverMusic.volume = 0.1
 
 Module.onRuntimeInitialized = async function () {
   let game = new Module.Game()
