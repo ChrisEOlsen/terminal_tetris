@@ -237,40 +237,42 @@ const drawScoreBoard = game => {
 }
 
 const drawGameFieldBorders = () => {
-  //Draw Border Lines
-  //Left border
   c.strokeStyle = "aquamarine"
-  drawLine(offsetX, offsetY, offsetX, nFieldHeight * blockSize + offsetY)
-  //Inner left border
-  drawLine(offsetX + blockSize, offsetY, offsetX + blockSize, nFieldHeight * blockSize + offsetY - blockSize)
-  //Right border
-  drawLine(
-    nFieldWidth * blockSize + offsetX,
-    offsetY,
-    nFieldWidth * blockSize + offsetX,
-    nFieldHeight * blockSize + offsetY
-  )
-  //Inner right border
-  drawLine(
-    nFieldWidth * blockSize + offsetX - blockSize,
-    offsetY,
-    nFieldWidth * blockSize + offsetX - blockSize,
-    nFieldHeight * blockSize + offsetY - blockSize
-  )
-  // Draw bottom border
-  drawLine(
-    offsetX,
-    nFieldHeight * blockSize + offsetY,
-    nFieldWidth * blockSize + offsetX,
-    nFieldHeight * blockSize + offsetY
-  )
-  //Inner bottom border
-  drawLine(
-    offsetX + blockSize,
-    nFieldHeight * blockSize + offsetY - blockSize,
-    nFieldWidth * blockSize + offsetX - blockSize,
-    nFieldHeight * blockSize + offsetY - blockSize
-  )
+  const lines = [
+    // Top border
+    [offsetX, offsetY, offsetX, nFieldHeight * blockSize + offsetY],
+
+    // Top inner border
+    [offsetX + blockSize, offsetY, offsetX + blockSize, nFieldHeight * blockSize + offsetY - blockSize],
+
+    // Right border
+    [nFieldWidth * blockSize + offsetX, offsetY, nFieldWidth * blockSize + offsetX, nFieldHeight * blockSize + offsetY],
+
+    // Right inner border
+    [
+      nFieldWidth * blockSize + offsetX - blockSize,
+      offsetY,
+      nFieldWidth * blockSize + offsetX - blockSize,
+      nFieldHeight * blockSize + offsetY - blockSize,
+    ],
+
+    // Bottom border
+    [
+      offsetX,
+      nFieldHeight * blockSize + offsetY,
+      nFieldWidth * blockSize + offsetX,
+      nFieldHeight * blockSize + offsetY,
+    ],
+
+    // Bottom inner border
+    [
+      offsetX + blockSize,
+      nFieldHeight * blockSize + offsetY - blockSize,
+      nFieldWidth * blockSize + offsetX - blockSize,
+      nFieldHeight * blockSize + offsetY - blockSize,
+    ],
+  ]
+  lines.forEach(args => drawLine(...args))
 }
 
 //LOCAL STORAGE STUFF:
