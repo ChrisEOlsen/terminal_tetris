@@ -7,6 +7,7 @@ let c = canvas.getContext("2d")
 let cn = nextPieceCanvas.getContext("2d")
 let cs = scoreBoard.getContext("2d")
 
+//Game dimensions TODO: HANDLE BLOCKSIZE BASED ON SCREEN SIZE
 let blockSize = 30 //px
 const nFieldWidth = 12
 const nFieldHeight = 23

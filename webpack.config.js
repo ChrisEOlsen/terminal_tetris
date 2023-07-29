@@ -40,5 +40,5 @@ module.exports = {
       crypto: false,
     },
   },
-  mode: "development",
+  mode: "production",
 }
