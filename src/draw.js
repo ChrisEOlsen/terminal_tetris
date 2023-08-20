@@ -126,15 +126,10 @@ const drawGameField = game => {
 }
 
 const drawTetromino = (px, py, nCurrentX, nCurrentY, nCurrentPiece) => {
-  // Set glow effect
-  c.shadowBlur = 12
-  c.shadowColor = tetrominoColors[nCurrentPiece]
   // Draw border
   c.strokeStyle = tetrominoColors[nCurrentPiece]
   c.lineWidth = 3
   c.strokeRect((nCurrentX + px) * blockSize + offsetX, (nCurrentY + py) * blockSize + offsetY, blockSize, blockSize)
-  c.shadowBlur = 0
-  c.shadowColor = "black"
 }
 
 const drawTetrominoShadow = (game, px, py, nCurrentX, nShadowY, tetromino, nCurrentPiece, nCurrentRotation) => {
