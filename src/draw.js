@@ -207,8 +207,6 @@ const drawNextPiece = (px, py, nNextPiece, nextTetromino) => {
 
   //Draw Next Piece in seperate canvas (cn)
   if (nextTetromino.get(py * 4 + px) == 1) {
-    cn.shadowBlur = 12
-    cn.shadowColor = tetrominoColors[nNextPiece]
     cn.strokeStyle = tetrominoColors[nNextPiece]
     cn.lineWidth = 2
     //change offsets based on piece
@@ -219,8 +217,6 @@ const drawNextPiece = (px, py, nNextPiece, nextTetromino) => {
       blockSize / 1.25
     )
   }
-  cn.shadowBlur = 0
-  cn.shadowColor = "black"
 }
 
 const drawScoreBoard = game => {
